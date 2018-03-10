@@ -10,7 +10,7 @@ import org.jsoup.select.Elements;
 
 
 /**
- * Documentar esta mierda papu
+ * 
  *
  */
 public class ResearchScrapper {
