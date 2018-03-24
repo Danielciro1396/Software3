@@ -23,12 +23,12 @@ public class ResearchScrapper {
             Document document = getHtmlDocument(url);
 			
             // Busco todas las entradas que estan dentro de: 
-            Elements entradas = document.select("tbody > tr > td");
+            Elements entradas = document.select("tbody > tr > td ");
             System.out.println("a encontrados: "+entradas.size()+"\n");
 			
             // Paseo cada una de las entradas
             for (Element elem : entradas) {
-                String nombre = elem.toString();
+                String nombre = elem.text();
                
 				
                 System.out.println(nombre);
