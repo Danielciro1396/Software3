@@ -23,8 +23,8 @@ public class ResearchScrapper {
             Document document = getHtmlDocument(url);
 			
             // Busco todas las entradas que estan dentro de: 
-            Elements entradas = document.select("table");
-            System.out.println("TR encontrados: "+entradas.size()+"\n");
+            Elements entradas = document.select("tbody");
+            System.out.println("Tbody encontrados: "+entradas.size()+"\n");
 			
             // Paseo cada una de las entradas
             for (Element elem : entradas) {
