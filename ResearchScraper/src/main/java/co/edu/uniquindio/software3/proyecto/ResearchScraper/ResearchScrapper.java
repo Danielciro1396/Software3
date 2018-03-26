@@ -18,6 +18,7 @@ public class ResearchScrapper {
 	public static final String url ="http://scienti.colciencias.gov.co:8081/cvlac/visualizador/generarCurriculoCv.do?cod_rh=0001383939";
 	
 	public static void main(String[] args) {
+		long startTime = System.currentTimeMillis();
 		if(getStatusConnectionCode(url)==200){
 			// Obtengo el HTML de la web en un objeto Document
             Document document = getHtmlDocument(url);
@@ -40,6 +41,10 @@ public class ResearchScrapper {
         }else{
             System.out.println("El Status Code no es OK es: "+getStatusConnectionCode(url));
         }
+		
+		long stopTime = System.currentTimeMillis();
+	      long elapsedTime = stopTime - startTime;
+	      System.out.println(elapsedTime);
     }
 
 			
