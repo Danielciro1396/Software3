@@ -1,5 +1,7 @@
 package co.edu.uniquindio.software3.proyecto.ResearchScraper;
 
+import java.io.BufferedWriter;
+import java.io.FileWriter;
 import java.io.IOException;
 
 import org.jsoup.Connection.Response;
@@ -15,7 +17,7 @@ import org.jsoup.select.Elements;
  */
 public class ResearchScrapper {
 	
-	public static final String url ="http://scienti.colciencias.gov.co:8081/cvlac/visualizador/generarCurriculoCv.do?cod_rh=0001383939";
+	public static final String url ="http://scienti.colciencias.gov.co:8081/cvlac/visualizador/generarCurriculoCv.do?cod_rh=0000197610";
 	
 	public static void main(String[] args) {
 		long startTime = System.currentTimeMillis();
@@ -24,20 +26,27 @@ public class ResearchScrapper {
             Document document = getHtmlDocument(url);
 			
             // Busco todas las entradas que estan dentro de: 
-            Elements entradas = document.select("tbody > tr > td ");
+            Elements entradas = document.select("tbody>tr>td>table>tbody");
+           // tbody>tr>td>table>tbody>tr:contains(Formación Académica), tbody>tr>td:contains(Eventos científicos)
             System.out.println("a encontrados: "+entradas.size()+"\n");
-			
+            String nombre="";
             // Paseo cada una de las entradas
             for (Element elem : entradas) {
-                String nombre = elem.text();
-               
-				
-                System.out.println(nombre);
-				
-                // Con el método "text()" obtengo el contenido que hay dentro de las etiquetas HTML
-                // Con el método "toString()" obtengo todo el HTML con etiquetas incluidas
+            	
+                nombre += elem.text()+"\n";				
+               // System.out.println(nombre);
             }
-				
+            
+            BufferedWriter writer = null;
+                try {
+					writer = new BufferedWriter( new FileWriter("d://test.txt"));
+					writer.write(nombre);
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+                
+            
         }else{
             System.out.println("El Status Code no es OK es: "+getStatusConnectionCode(url));
         }
@@ -45,6 +54,7 @@ public class ResearchScrapper {
 		long stopTime = System.currentTimeMillis();
 	      long elapsedTime = stopTime - startTime;
 	      System.out.println(elapsedTime);
+	      
     }
 
 			
