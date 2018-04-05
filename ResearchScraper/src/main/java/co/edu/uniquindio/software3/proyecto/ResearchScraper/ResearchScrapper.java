@@ -9,7 +9,7 @@ public class ResearchScrapper {
 	public static void main(String[] args) {
 		
 		CvLac cvLac = new CvLac();
-		Orcid orcid = new Orcid();
+		//Orcid orcid = new Orcid();
 		cvLac.extraer();
 	}
 }
