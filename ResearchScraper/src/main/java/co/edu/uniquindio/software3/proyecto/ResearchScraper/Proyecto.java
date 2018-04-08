@@ -5,13 +5,13 @@ public class Proyecto {
 	private int id;
 	private String tipo;
 	private String nombre;
-	private String inicio;
+	private String fecha;
 	
-	public Proyecto(int id, String tipo, String nombre, String inicio) {
+	public Proyecto(int id, String tipo, String nombre, String fecha) {
 		this.id = id;
 		this.tipo = tipo;
 		this.nombre = nombre;
-		this.inicio = inicio;
+		this.fecha = fecha;
 	}
 
 	public Proyecto() {
@@ -41,12 +41,12 @@ public class Proyecto {
 		this.nombre = nombre;
 	}
 
-	public String getInicio() {
-		return inicio;
+	public String getFecha() {
+		return fecha;
 	}
 
-	public void setInicio(String inicio) {
-		this.inicio = inicio;
+	public void setFecha(String fecha) {
+		this.fecha = fecha;
 	}
 	
 	
