@@ -81,7 +81,7 @@ public class CvLac {
 			// limpiar(elemEventos), limpiar(elemArticulos),
 			// limpiar(elemLibros),limpiar(elemInformes),limpiar(elemProyectos),limpiar(elemPublicacionesN));
 
-			limpiar(elemLibros);
+			limpiar(elemInformes);
 
 		} else {
 			System.out.println("El Status Code no es OK es: " + getStatusConnectionCode(url));
@@ -134,22 +134,6 @@ public class CvLac {
 		return doc;
 	}
 
-	public void obtenerDatos(ArrayList<String> elementos) {
-		// try{
-		// Investigador i = new Investigador();
-		// String [] datos=extraerDatosPersonales(elementos);
-		// String formacion=extraerFormacionAcademica(elementos);
-		// i.setNombre(datos[0]);
-		// i.setCategoria(datos[1]);
-		// i.setFormacion(formacion);
-		// System.out.println(i.getNombre());
-		// System.out.println(i.getCategoria());
-		// System.out.println(i.getFormacion());
-		// }catch(NullPointerException ex){
-		//
-		// }
-	}
-
 	public void extraerDatos(ArrayList<String> datosPersonales, ArrayList<String> formacion, ArrayList<String> eventos,
 			ArrayList<String> articulos, ArrayList<String> libros, ArrayList<String> informes,
 			ArrayList<String> proyectos, ArrayList<String> publicacionesN) {
@@ -183,7 +167,11 @@ public class CvLac {
 		} catch (NullPointerException e) {
 
 		}
+		try {
+			extraerLibros(libros, investigador);
+		} catch (NullPointerException e) {
 
+		}
 	}
 
 	public void extraerFormacionAcademica(ArrayList<String> elementos, Investigador investigador) {
@@ -441,93 +429,93 @@ public class CvLac {
 	 * @param elementos
 	 * @param investigador
 	 */
-	public void extraerInforme(ArrayList<String> elementos, Investigador investigador) {
-		String autores = "";
-		String titulo = "";
-		String lugar = "";
-		String anio = "";
-		String aux = "";
-		aux = StringUtils.stripAccents(investigador.getNombre());
-		aux = aux.substring(1, aux.length() - 1);
-		ArrayList<InformeInvestigacion> informeAux = new ArrayList<>();
-		for (int i = 0; i < elementos.size(); i++) {
-			InformeInvestigacion informe = new InformeInvestigacion();
-
-			if (elementos.get(i).contains(aux.toUpperCase())) {
-				String cadena = elementos.get(i);
-				char[] auxiliar = cadena.toCharArray();
-				int posI = 0;
-				int posF = 0;
-				for (int j = 0; j < auxiliar.length; j++) {
-					if ((esMayuscula(auxiliar[j]) && esMinuscula(auxiliar[j + 1]))
-							|| (esMayuscula(auxiliar[j]) && esMinuscula(auxiliar[j + 3]))) {
-						if (auxiliar[j] == '"') {
-							posI = j + 1;
-							for (int k = posI + 1; k < auxiliar.length; k++) {
-								if (auxiliar[k] == '"') {
-									posF = k;
-									titulo = cadena.substring(posI, posF);
-									j = k;
-									break;
-								}
-							}
-						} else if (auxiliar[j] == ':') {
-							posI = j + 1;
-							lugar = cadena.substring(posI);
-						} else {
-							posI = j;
-							for (int k = posI; k < auxiliar.length; k++) {
-								if (auxiliar[k] == '"') {
-									posF = k - 2;
-									autores = cadena.substring(posI, posF);
-									j = k - 1;
-									break;
-								}
-							}
-						}
-					}
-
-				}
-				nomRevista = elementos.get(i + 1);
-			}
-			if (elementos.get(i).contains("ed:")) {
-				nomRevista += " Editorial: " + elementos.get(i + 1);
-			}
-			if (elementos.get(i).contains("fasc.")) {
-				String cadena = elementos.get(i + 1);
-				char[] auxiliar = cadena.toCharArray();
-				int posI = 0;
-				int posF = 0;
-				for (int j = 0; j < auxiliar.length; j++) {
-					if (auxiliar[j] == ',') {
-						posI = j + 1;
-						for (int k = posI; k < auxiliar.length; k++) {
-							if (auxiliar[k] == ',') {
-								posF = k;
-								anio = cadena.substring(posI, posF);
-								j = k;
-								break;
-							}
-						}
-					}
-				}
-				articulo.setEsEspecializada(esEspecializada);
-				articulo.setTitulo(titulo);
-				articulo.setAnio(anio);
-				articulo.setAutores(autores);
-				articulo.setLugar(lugar);
-				articulo.setNomRevista(nomRevista);
-				articuloAux.add(articulo);
-				investigador.setArticulos(articuloAux);
-			}
-
-		}
-		// for (int j = 0; j < investigador.getArticulos().size(); j++) {
-		// System.out.println((j + 1) + ": " +
-		// investigador.getArticulos().get(j).getTitulo());
-		// System.out.println(investigador.getArticulos().get(j).getAnio());
-		// }
-	}
+//	public void extraerInforme(ArrayList<String> elementos, Investigador investigador) {
+//		String autores = "";
+//		String titulo = "";
+//		String lugar = "";
+//		String anio = "";
+//		String aux = "";
+//		aux = StringUtils.stripAccents(investigador.getNombre());
+//		aux = aux.substring(1, aux.length() - 1);
+//		ArrayList<InformeInvestigacion> informeAux = new ArrayList<>();
+//		for (int i = 0; i < elementos.size(); i++) {
+//			InformeInvestigacion informe = new InformeInvestigacion();
+//
+//			if (elementos.get(i).contains(aux.toUpperCase())) {
+//				String cadena = elementos.get(i);
+//				char[] auxiliar = cadena.toCharArray();
+//				int posI = 0;
+//				int posF = 0;
+//				for (int j = 0; j < auxiliar.length; j++) {
+//					if ((esMayuscula(auxiliar[j]) && esMinuscula(auxiliar[j + 1]))
+//							|| (esMayuscula(auxiliar[j]) && esMinuscula(auxiliar[j + 3]))) {
+//						if (auxiliar[j] == '"') {
+//							posI = j + 1;
+//							for (int k = posI + 1; k < auxiliar.length; k++) {
+//								if (auxiliar[k] == '"') {
+//									posF = k;
+//									titulo = cadena.substring(posI, posF);
+//									j = k;
+//									break;
+//								}
+//							}
+//						} else if (auxiliar[j] == ':') {
+//							posI = j + 1;
+//							lugar = cadena.substring(posI);
+//						} else {
+//							posI = j;
+//							for (int k = posI; k < auxiliar.length; k++) {
+//								if (auxiliar[k] == '"') {
+//									posF = k - 2;
+//									autores = cadena.substring(posI, posF);
+//									j = k - 1;
+//									break;
+//								}
+//							}
+//						}
+//					}
+//
+//				}
+//				nomRevista = elementos.get(i + 1);
+//			}
+//			if (elementos.get(i).contains("ed:")) {
+//				nomRevista += " Editorial: " + elementos.get(i + 1);
+//			}
+//			if (elementos.get(i).contains("fasc.")) {
+//				String cadena = elementos.get(i + 1);
+//				char[] auxiliar = cadena.toCharArray();
+//				int posI = 0;
+//				int posF = 0;
+//				for (int j = 0; j < auxiliar.length; j++) {
+//					if (auxiliar[j] == ',') {
+//						posI = j + 1;
+//						for (int k = posI; k < auxiliar.length; k++) {
+//							if (auxiliar[k] == ',') {
+//								posF = k;
+//								anio = cadena.substring(posI, posF);
+//								j = k;
+//								break;
+//							}
+//						}
+//					}
+//				}
+//				articulo.setEsEspecializada(esEspecializada);
+//				articulo.setTitulo(titulo);
+//				articulo.setAnio(anio);
+//				articulo.setAutores(autores);
+//				articulo.setLugar(lugar);
+//				articulo.setNomRevista(nomRevista);
+//				articuloAux.add(articulo);
+//				investigador.setArticulos(articuloAux);
+//			}
+//
+//		}
+//		// for (int j = 0; j < investigador.getArticulos().size(); j++) {
+//		// System.out.println((j + 1) + ": " +
+//		// investigador.getArticulos().get(j).getTitulo());
+//		// System.out.println(investigador.getArticulos().get(j).getAnio());
+//		// }
+//	}
 
 	public ArrayList<String> limpiar(ArrayList<String> elementos) {
 		String etiquetas = "";
