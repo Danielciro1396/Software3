@@ -34,6 +34,20 @@
     <artifactId>commons-lang3</artifactId>
     <version>3.0</version>
 </dependency>
+
+<!-- https://mvnrepository.com/artifact/org.seleniumhq.selenium/selenium-java -->
+<dependency>
+    <groupId>org.seleniumhq.selenium</groupId>
+    <artifactId>selenium-java</artifactId>
+    <version>3.11.0</version>
+</dependency>
+
+<!-- https://mvnrepository.com/artifact/org.jfree/jfreechart -->
+<dependency>
+    <groupId>org.jfree</groupId>
+    <artifactId>jfreechart</artifactId>
+    <version>1.0.19</version>
+</dependency>
   </dependencies>
   
   <build>

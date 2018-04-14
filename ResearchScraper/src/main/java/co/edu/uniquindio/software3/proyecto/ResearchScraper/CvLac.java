@@ -14,7 +14,7 @@ import org.jsoup.select.Elements;
 
 public class CvLac {
 
-	public final String url = "http://scienti.colciencias.gov.co:8081/cvlac/visualizador/generarCurriculoCv.do?cod_rh=0000438383";
+	
 	public ArrayList<String> elemInfoPersonal = new ArrayList<>();
 	public ArrayList<String> elemFormacionAcam = new ArrayList<>();
 	public ArrayList<String> elemEventos = new ArrayList<>();
@@ -23,15 +23,17 @@ public class CvLac {
 	public ArrayList<String> elemInformes = new ArrayList<>();
 	public ArrayList<String> elemProyectos = new ArrayList<>();
 	public ArrayList<String> elemPublicacionesN = new ArrayList<>();
+	public ArrayList<Investigador> investigadores = new ArrayList<>();
+	
 
-	public void extraer() {
+	public void extraer(String url) {
 		long startTime = System.currentTimeMillis();
 		if (getStatusConnectionCode(url) == 200) {
 			// Obtengo el HTML de la web en un objeto Document
 			Document document = getHtmlDocument(url);
 			// Busco todas las entradas que estan dentro de:
 			Elements entradas = document.select("tbody>tr>td>table>tbody");
-			System.out.println("a encontrados: " + entradas.size() + "\n");
+			
 			String nombre = "";
 			// Paseo cada una de las entradas
 			for (Element elem : entradas) {
@@ -77,9 +79,9 @@ public class CvLac {
 
 			// extraerDatos(limpiar(elemInfoPersonal), null, null,
 			// limpiar(elemArticulos), null, null, null, null);
-			// extraerDatos(limpiar(elemInfoPersonal),limpiar(elemFormacionAcam),
-			// limpiar(elemEventos), limpiar(elemArticulos),
-			// limpiar(elemLibros),limpiar(elemInformes),limpiar(elemProyectos),limpiar(elemPublicacionesN));
+			 extraerDatos(limpiar(elemInfoPersonal),limpiar(elemFormacionAcam),
+			 limpiar(elemEventos), limpiar(elemArticulos),
+			 limpiar(elemLibros),limpiar(elemInformes),limpiar(elemProyectos),limpiar(elemPublicacionesN));
 
 			limpiar(elemInformes);
 
@@ -137,7 +139,7 @@ public class CvLac {
 	public void extraerDatos(ArrayList<String> datosPersonales, ArrayList<String> formacion, ArrayList<String> eventos,
 			ArrayList<String> articulos, ArrayList<String> libros, ArrayList<String> informes,
 			ArrayList<String> proyectos, ArrayList<String> publicacionesN) {
-		Investigador investigador = new Investigador();
+			Investigador investigador = new Investigador();
 		try {
 			for (int i = 0; i < datosPersonales.size(); i++) {
 				if (datosPersonales.get(i).contains("Categoría")) {
@@ -177,6 +179,7 @@ public class CvLac {
 		} catch (NullPointerException e) {
 
 		}
+		investigadores.add(investigador);
 	}
 
 	public void extraerFormacionAcademica(ArrayList<String> elementos, Investigador investigador) {
@@ -595,9 +598,7 @@ public class CvLac {
 
 		}
 		elementosLimpio = aux2;
-		for (int i = 0; i < elementosLimpio.size(); i++) {
-			System.out.println(elementosLimpio.get(i));
-		}
+		
 		return elementosLimpio;
 	}
 
@@ -616,5 +617,79 @@ public class CvLac {
 			return false;
 		}
 	}
+
+	public ArrayList<String> getElemInfoPersonal() {
+		return elemInfoPersonal;
+	}
+
+	public void setElemInfoPersonal(ArrayList<String> elemInfoPersonal) {
+		this.elemInfoPersonal = elemInfoPersonal;
+	}
+
+	public ArrayList<String> getElemFormacionAcam() {
+		return elemFormacionAcam;
+	}
+
+	public void setElemFormacionAcam(ArrayList<String> elemFormacionAcam) {
+		this.elemFormacionAcam = elemFormacionAcam;
+	}
+
+	public ArrayList<String> getElemEventos() {
+		return elemEventos;
+	}
+
+	public void setElemEventos(ArrayList<String> elemEventos) {
+		this.elemEventos = elemEventos;
+	}
+
+	public ArrayList<String> getElemArticulos() {
+		return elemArticulos;
+	}
+
+	public void setElemArticulos(ArrayList<String> elemArticulos) {
+		this.elemArticulos = elemArticulos;
+	}
+
+	public ArrayList<String> getElemLibros() {
+		return elemLibros;
+	}
+
+	public void setElemLibros(ArrayList<String> elemLibros) {
+		this.elemLibros = elemLibros;
+	}
+
+	public ArrayList<String> getElemInformes() {
+		return elemInformes;
+	}
+
+	public void setElemInformes(ArrayList<String> elemInformes) {
+		this.elemInformes = elemInformes;
+	}
+
+	public ArrayList<String> getElemProyectos() {
+		return elemProyectos;
+	}
+
+	public void setElemProyectos(ArrayList<String> elemProyectos) {
+		this.elemProyectos = elemProyectos;
+	}
+
+	public ArrayList<String> getElemPublicacionesN() {
+		return elemPublicacionesN;
+	}
+
+	public void setElemPublicacionesN(ArrayList<String> elemPublicacionesN) {
+		this.elemPublicacionesN = elemPublicacionesN;
+	}
+
+	public ArrayList<Investigador> getInvestigadores() {
+		return investigadores;
+	}
+
+	public void setInvestigadores(ArrayList<Investigador> investigadores) {
+		this.investigadores = investigadores;
+	}
+	
+	
 
 }
