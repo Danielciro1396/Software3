@@ -172,6 +172,11 @@ public class CvLac {
 		} catch (NullPointerException e) {
 
 		}
+		try {
+			extraerProyectos(proyectos, investigador);
+		} catch (NullPointerException e) {
+
+		}
 	}
 
 	public void extraerFormacionAcademica(ArrayList<String> elementos, Investigador investigador) {
@@ -423,6 +428,39 @@ public class CvLac {
 		}
 
 	}
+	
+	public void extraerProyectos(ArrayList<String> elementos,Investigador investigador ) {
+		int posI;
+		int posF;
+		String tipo ="";
+		String nombre = ""; 
+		String  fecha= "";
+		ArrayList<Proyecto> proyectoAux = new ArrayList<>();   
+		for (int i = 0; i < elementos.size(); i++) {
+			Proyecto proyecto =new Proyecto();
+			if(elementos.get(i).contains("Tipo de proyecto:")) {
+				tipo=elementos.get(i+1);
+				nombre=elementos.get(i+2);
+			}
+			if(elementos.get(i).contains("Inicio:")) {
+				String cadena = elementos.get(i+1);
+				char [] aux =cadena.toCharArray();
+				for (int j = 0; j < aux.length; j++) {
+					if(aux[j]=='2') {
+						posI=j;
+						posF=j+4;
+						fecha = cadena.substring(posI, posF);
+						j=posF;
+					}
+				} 
+				proyecto.setTipo(tipo);
+				proyecto.setNombre(nombre);  
+				proyecto.setFecha(fecha);
+				proyectoAux.add(proyecto);
+				investigador.setProyectos(proyectoAux);
+			}
+		}
+}
 
 	/**
 	 * 
