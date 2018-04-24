@@ -4,6 +4,7 @@ import java.awt.Point;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.lang.ref.PhantomReference;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,6 +14,7 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.chrome.ChromeOptions;
 
 import co.edu.uniquindio.software3.proyecto.excepciones.UrlOrcidInvalidaException;
 
@@ -32,8 +34,10 @@ public class OrcidScraper {
 	public Investigador scrapData (String url) {
 				
 		//Se inicializa el driver para la extracción.
-		System.setProperty("webdriver.chrome.driver", "d://chromedriver.exe");
-		WebDriver driver = new ChromeDriver();
+		System.setProperty("webdriver.chrome.driver", "chromedriver.exe");
+		ChromeOptions options = new ChromeOptions();
+		options.addArguments("--headless");
+		WebDriver driver = new ChromeDriver(options);
 		org.openqa.selenium.Point point = new org.openqa.selenium.Point(-10000, 0);
 		driver.manage().window().setPosition(point);
 		driver.get(url);

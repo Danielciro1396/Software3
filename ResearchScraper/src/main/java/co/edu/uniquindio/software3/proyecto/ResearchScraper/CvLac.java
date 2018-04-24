@@ -1,6 +1,8 @@
 package co.edu.uniquindio.software3.proyecto.ResearchScraper;
 
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -14,7 +16,7 @@ import org.jsoup.select.Elements;
 
 public class CvLac {
 
-	
+	public ArrayList<String> urlSet;
 	public ArrayList<String> elemInfoPersonal = new ArrayList<>();
 	public ArrayList<String> elemFormacionAcam = new ArrayList<>();
 	public ArrayList<String> elemEventos = new ArrayList<>();
@@ -27,7 +29,7 @@ public class CvLac {
 	
 
 	public void extraer(String url) {
-		long startTime = System.currentTimeMillis();
+		
 		if (getStatusConnectionCode(url) == 200) {
 			// Obtengo el HTML de la web en un objeto Document
 			Document document = getHtmlDocument(url);
@@ -65,20 +67,8 @@ public class CvLac {
 
 			}
 
-			BufferedWriter writer = null;
-			try {
-				writer = new BufferedWriter(new FileWriter("d://test.txt"));
-				// writer = new BufferedWriter(new
-				// FileWriter("C://Users//dan97//Desktop/test.txt"));
-				writer.write(nombre);
-				writer.close();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			
 
-			// extraerDatos(limpiar(elemInfoPersonal), null, null,
-			// limpiar(elemArticulos), null, null, null, null);
 			 extraerDatos(limpiar(elemInfoPersonal),limpiar(elemFormacionAcam),
 			 limpiar(elemEventos), limpiar(elemArticulos),
 			 limpiar(elemLibros),limpiar(elemInformes),limpiar(elemProyectos),limpiar(elemPublicacionesN));
@@ -89,10 +79,20 @@ public class CvLac {
 			System.out.println("El Status Code no es OK es: " + getStatusConnectionCode(url));
 		}
 
+		
+
+	}
+	
+	public void scrapData(){
+		long startTime = System.currentTimeMillis();
+		leerDataSet();
+		for (int i = 0; i < urlSet.size(); i++) {
+			extraer(urlSet.get(i));
+		}
+		
 		long stopTime = System.currentTimeMillis();
 		long elapsedTime = stopTime - startTime;
 		System.out.println(elapsedTime);
-
 	}
 
 	/**
@@ -180,7 +180,10 @@ public class CvLac {
 
 		}
 		investigadores.add(investigador);
+		System.out.println(investigador.getNombre());
 	}
+	
+	
 
 	public void extraerFormacionAcademica(ArrayList<String> elementos, Investigador investigador) {
 		for (int i = 0; i < elementos.size(); i++) {
@@ -617,6 +620,24 @@ public class CvLac {
 			return false;
 		}
 	}
+	
+	public void leerDataSet(){
+		try{
+			urlSet=  new ArrayList<String>();
+			String cadena;
+		      FileReader f = new FileReader("d://Dataset.txt");
+		      BufferedReader b = new BufferedReader(f);
+		      while((cadena = b.readLine())!=null) {
+		    	  String url = "http://scienti.colciencias.gov.co:8081/cvlac/visualizador/generarCurriculoCv.do?cod_rh=" + cadena;
+		          urlSet.add(url);
+		      }
+		      b.close();
+		      
+			}catch(IOException ex){
+				ex.printStackTrace();
+			
+		}
+	}
 
 	public ArrayList<String> getElemInfoPersonal() {
 		return elemInfoPersonal;
@@ -688,6 +709,14 @@ public class CvLac {
 
 	public void setInvestigadores(ArrayList<Investigador> investigadores) {
 		this.investigadores = investigadores;
+	}
+
+	public ArrayList<String> getUrlSet() {
+		return urlSet;
+	}
+
+	public void setUrlSet(ArrayList<String> urlSet) {
+		this.urlSet = urlSet;
 	}
 	
 	
