@@ -25,6 +25,10 @@ public class CvLac {
 	public ArrayList<String> elemPublicacionesN = new ArrayList<>();
 	public ArrayList<Investigador> investigadores = new ArrayList<>();
 
+	/**
+	 * 
+	 * @param url
+	 */
 	public void extraer(String url) {
 
 		if (getStatusConnectionCode(url) == 200) {
@@ -71,7 +75,9 @@ public class CvLac {
 		}
 
 	}
-
+/**
+ * 
+ */
 	public void scrapData() {
 		long startTime = System.currentTimeMillis();
 		leerDataSet();
@@ -125,7 +131,17 @@ public class CvLac {
 		}
 		return doc;
 	}
-
+/**
+ * 
+ * @param datosPersonales
+ * @param formacion
+ * @param eventos
+ * @param articulos
+ * @param libros
+ * @param informes
+ * @param proyectos
+ * @param publicacionesN
+ */
 	public void extraerDatos(ArrayList<String> datosPersonales, ArrayList<String> formacion, ArrayList<String> eventos,
 			ArrayList<String> articulos, ArrayList<String> libros, ArrayList<String> informes,
 			ArrayList<String> proyectos, ArrayList<String> publicacionesN) {
@@ -202,7 +218,11 @@ public class CvLac {
 		}
 
 	}
-
+/**
+ * 
+ * @param elementos
+ * @param investigador
+ */
 	public void extraerFormacionAcademica(ArrayList<String> elementos, Investigador investigador) {
 		for (int i = 0; i < elementos.size(); i++) {
 			if (elementos.get(i).equals("Formación Académica")) {
@@ -211,6 +231,11 @@ public class CvLac {
 		}
 	}
 
+	/**
+	 * 
+	 * @param elementos
+	 * @param investigador
+	 */
 	public void extraerEventos(ArrayList<String> elementos, Investigador investigador) {
 		String nombre = "";
 		String tipo = "";
@@ -282,6 +307,11 @@ public class CvLac {
 
 	}
 
+	/**
+	 * 
+	 * @param elementos
+	 * @param investigador
+	 */
 	public void extraerArticulos(ArrayList<String> elementos, Investigador investigador) {
 		boolean esEspecializada = false;
 		String autores = "";
@@ -369,13 +399,13 @@ public class CvLac {
 			}
 
 		}
-		// for (int j = 0; j < investigador.getArticulos().size(); j++) {
-		// System.out.println((j + 1) + ": " +
-		// investigador.getArticulos().get(j).getTitulo());
-		// System.out.println(investigador.getArticulos().get(j).getAnio());
-		// }
 	}
 
+	/**
+	 * 
+	 * @param elementos
+	 * @param investigador
+	 */
 	public void extraerLibros(ArrayList<String> elementos, Investigador investigador) {
 		String autores = "";
 		String titulo = "";
@@ -458,6 +488,11 @@ public class CvLac {
 
 	}
 
+	/**
+	 * 
+	 * @param elementos
+	 * @param investigador
+	 */
 	public void extraerProyectos(ArrayList<String> elementos, Investigador investigador) {
 		int posI;
 		int posF;
@@ -494,97 +529,8 @@ public class CvLac {
 	/**
 	 * 
 	 * @param elementos
-	 * @param investigador
+	 * @return
 	 */
-	// public void extraerInforme(ArrayList<String> elementos, Investigador
-	// investigador) {
-	// String autores = "";
-	// String titulo = "";
-	// String lugar = "";
-	// String anio = "";
-	// String aux = "";
-	// aux = StringUtils.stripAccents(investigador.getNombre());
-	// aux = aux.substring(1, aux.length() - 1);
-	// ArrayList<InformeInvestigacion> informeAux = new ArrayList<>();
-	// for (int i = 0; i < elementos.size(); i++) {
-	// InformeInvestigacion informe = new InformeInvestigacion();
-	//
-	// if (elementos.get(i).contains(aux.toUpperCase())) {
-	// String cadena = elementos.get(i);
-	// char[] auxiliar = cadena.toCharArray();
-	// int posI = 0;
-	// int posF = 0;
-	// for (int j = 0; j < auxiliar.length; j++) {
-	// if ((esMayuscula(auxiliar[j]) && esMinuscula(auxiliar[j + 1]))
-	// || (esMayuscula(auxiliar[j]) && esMinuscula(auxiliar[j + 3]))) {
-	// if (auxiliar[j] == '"') {
-	// posI = j + 1;
-	// for (int k = posI + 1; k < auxiliar.length; k++) {
-	// if (auxiliar[k] == '"') {
-	// posF = k;
-	// titulo = cadena.substring(posI, posF);
-	// j = k;
-	// break;
-	// }
-	// }
-	// } else if (auxiliar[j] == ':') {
-	// posI = j + 1;
-	// lugar = cadena.substring(posI);
-	// } else {
-	// posI = j;
-	// for (int k = posI; k < auxiliar.length; k++) {
-	// if (auxiliar[k] == '"') {
-	// posF = k - 2;
-	// autores = cadena.substring(posI, posF);
-	// j = k - 1;
-	// break;
-	// }
-	// }
-	// }
-	// }
-	//
-	// }
-	// nomRevista = elementos.get(i + 1);
-	// }
-	// if (elementos.get(i).contains("ed:")) {
-	// nomRevista += " Editorial: " + elementos.get(i + 1);
-	// }
-	// if (elementos.get(i).contains("fasc.")) {
-	// String cadena = elementos.get(i + 1);
-	// char[] auxiliar = cadena.toCharArray();
-	// int posI = 0;
-	// int posF = 0;
-	// for (int j = 0; j < auxiliar.length; j++) {
-	// if (auxiliar[j] == ',') {
-	// posI = j + 1;
-	// for (int k = posI; k < auxiliar.length; k++) {
-	// if (auxiliar[k] == ',') {
-	// posF = k;
-	// anio = cadena.substring(posI, posF);
-	// j = k;
-	// break;
-	// }
-	// }
-	// }
-	// }
-	// articulo.setEsEspecializada(esEspecializada);
-	// articulo.setTitulo(titulo);
-	// articulo.setAnio(anio);
-	// articulo.setAutores(autores);
-	// articulo.setLugar(lugar);
-	// articulo.setNomRevista(nomRevista);
-	// articuloAux.add(articulo);
-	// investigador.setArticulos(articuloAux);
-	// }
-	//
-	// }
-	// // for (int j = 0; j < investigador.getArticulos().size(); j++) {
-	// // System.out.println((j + 1) + ": " +
-	// // investigador.getArticulos().get(j).getTitulo());
-	// // System.out.println(investigador.getArticulos().get(j).getAnio());
-	// // }
-	// }
-
 	public ArrayList<String> limpiar(ArrayList<String> elementos) {
 		String etiquetas = "";
 		ArrayList<String> elementosLimpio = new ArrayList<>();
@@ -625,28 +571,12 @@ public class CvLac {
 
 		}
 		elementosLimpio = aux2;
-		// for (int i = 0; i < elementosLimpio.size(); i++) {
-		// System.out.println(elementosLimpio.get(i).toString());
-		// }
 		return elementosLimpio;
 	}
 
-	public boolean esMayuscula(char a) {
-		if (a > 40 && a < 91) {
-			return true;
-		} else {
-			return false;
-		}
-	}
-
-	public boolean esMinuscula(char a) {
-		if (a > 60 && a < 123) {
-			return true;
-		} else {
-			return false;
-		}
-	}
-
+	/**
+	 * 
+	 */
 	public void leerDataSet() {
 		try {
 			urlSet = new ArrayList<String>();
