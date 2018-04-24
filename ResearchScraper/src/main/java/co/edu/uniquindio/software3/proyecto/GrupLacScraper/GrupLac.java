@@ -118,6 +118,7 @@ public class GrupLac {
 				}
 				if (elem.text().contains("Datos básicos")) {
 					elemInformacion.add(elem.toString());
+					System.out.println(elem.toString());
 				}
 
 				if (elem.text().contains("Integrantes del grupo")) {
