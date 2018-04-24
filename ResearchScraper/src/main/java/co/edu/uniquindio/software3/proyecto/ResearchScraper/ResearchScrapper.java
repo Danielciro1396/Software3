@@ -10,6 +10,6 @@ public class ResearchScrapper {
 		CvLac cv = new CvLac();
 		cv.scrapData();
 //		cv.extraer("http://scienti.colciencias.gov.co:8081/cvlac/visualizador/generarCurriculoCv.do?cod_rh=0000438383");
-//	cv.extraer("http://scienti.colciencias.gov.co:8081/cvlac/visualizador/generarCurriculoCv.do?cod_rh=0000238651");
+//		cv.extraer("http://scienti.colciencias.gov.co:8081/cvlac/visualizador/generarCurriculoCv.do?cod_rh=0001336346");
 	}
 }
