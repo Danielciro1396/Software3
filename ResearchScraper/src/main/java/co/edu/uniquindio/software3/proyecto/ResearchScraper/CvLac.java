@@ -1,15 +1,13 @@
 package co.edu.uniquindio.software3.proyecto.ResearchScraper;
 
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 
-import org.jsoup.Jsoup;
 import org.apache.commons.lang3.StringUtils;
 import org.jsoup.Connection.Response;
+import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
@@ -35,9 +33,7 @@ public class CvLac {
 			Document document = getHtmlDocument(url);
 			// Busco todas las entradas que estan dentro de:
 			Elements entradas = document.select("tbody>tr>td>table>tbody");
-			
-			String nombre = "";
-			// Paseo cada una de las entradas
+
 			for (Element elem : entradas) {
 
 				if (elem.text().contains("Nombre en citaciones")) {
@@ -73,7 +69,7 @@ public class CvLac {
 			 limpiar(elemEventos), limpiar(elemArticulos),
 			 limpiar(elemLibros),limpiar(elemInformes),limpiar(elemProyectos),limpiar(elemPublicacionesN));
 
-			limpiar(elemInformes);
+		
 
 		} else {
 			System.out.println("El Status Code no es OK es: " + getStatusConnectionCode(url));
@@ -87,6 +83,7 @@ public class CvLac {
 		long startTime = System.currentTimeMillis();
 		leerDataSet();
 		for (int i = 0; i < urlSet.size(); i++) {
+			System.out.println(i+1);
 			extraer(urlSet.get(i));
 		}
 		
@@ -179,8 +176,15 @@ public class CvLac {
 		} catch (NullPointerException e) {
 
 		}
-		investigadores.add(investigador);
-		System.out.println(investigador.getNombre());
+		
+		try {
+			investigadores.add(investigador);
+			System.out.println(investigador.getNombre());
+			System.out.println(investigador.getArticulos().get(0).getTitulo());
+		} catch (Exception e) {
+
+		}
+		
 	}
 	
 	
@@ -202,6 +206,7 @@ public class CvLac {
 		String rol = "";
 		String aux = "";
 		aux = StringUtils.stripAccents(investigador.getNombre());
+		aux= aux.replace("  ", " ");
 		aux = aux.substring(1);
 		ArrayList<EventoCientifico> eventoAux = new ArrayList<>();
 		for (int i = 0; i < elementos.size(); i++) {
@@ -258,11 +263,7 @@ public class CvLac {
 				investigador.setEventos(eventoAux);
 			}
 		}
-		// for (int j = 0; j < investigador.getEventos().size(); j++) {
-		// System.out.println((j+1)+":
-		// "+investigador.getEventos().get(j).getNombre());
-		// System.out.println(investigador.getEventos().get(j).getFecha());
-		// }
+		
 	}
 
 	public void extraerArticulos(ArrayList<String> elementos, Investigador investigador) {
@@ -273,15 +274,19 @@ public class CvLac {
 		String nomRevista = "";
 		String anio = "";
 		String aux = "";
+		String aux2="";
 		aux = StringUtils.stripAccents(investigador.getNombre());
+		aux= aux.replace("  ", " ");
 		aux = aux.substring(1, aux.length() - 1);
+		System.out.println(aux);
 		ArrayList<Articulo> articuloAux = new ArrayList<>();
 		for (int i = 0; i < elementos.size(); i++) {
 			Articulo articulo = new Articulo();
 			if (elementos.get(i).contains("Publicado en revista especializada")) {
 				esEspecializada = true;
 			}
-			if (elementos.get(i).contains(aux.toUpperCase())) {
+			aux2=StringUtils.stripAccents(elementos.get(i));
+			if (aux2.toUpperCase().contains(aux.toUpperCase())) {
 				String cadena = elementos.get(i);
 				char[] auxiliar = cadena.toCharArray();
 				int posI = 0;
@@ -601,7 +606,9 @@ public class CvLac {
 
 		}
 		elementosLimpio = aux2;
-		
+//		for (int i = 0; i < elementosLimpio.size(); i++) {
+//			System.out.println(elementosLimpio.get(i).toString());
+//		}
 		return elementosLimpio;
 	}
 
