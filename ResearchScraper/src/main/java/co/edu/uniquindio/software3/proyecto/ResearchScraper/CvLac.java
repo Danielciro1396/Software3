@@ -180,7 +180,7 @@ public class CvLac {
 		try {
 			investigadores.add(investigador);
 			System.out.println(investigador.getNombre());
-			System.out.println(investigador.getArticulos().get(0).getTitulo());
+			System.out.println(investigador.getLibros().get(0).getTitulo());
 		} catch (Exception e) {
 
 		}
@@ -205,6 +205,7 @@ public class CvLac {
 		String lugar = "";
 		String rol = "";
 		String aux = "";
+		String aux2= "";
 		aux = StringUtils.stripAccents(investigador.getNombre());
 		aux= aux.replace("  ", " ");
 		aux = aux.substring(1);
@@ -244,7 +245,8 @@ public class CvLac {
 					}
 				}
 			}
-			if (elementos.get(i).equalsIgnoreCase(aux) && elementos.get(i + 1).contains("Rol en el evento:")) {
+			aux2 = StringUtils.stripAccents(elementos.get(i));
+			if (aux2.equalsIgnoreCase(aux) && elementos.get(i + 1).contains("Rol en el evento:")) {
 				rol = elementos.get(i + 2);
 				eventos.setNombre(nombre);
 				eventos.setTipo(tipo);
@@ -368,12 +370,15 @@ public class CvLac {
 		String anio = "";
 		String editorial = "";
 		String aux = "";
+		String aux2="";
 		aux = StringUtils.stripAccents(investigador.getNombre());
+		aux= aux.replace("  ", " ");
 		aux = aux.substring(1, aux.length() - 1);
 		ArrayList<Libro> libroAux = new ArrayList<>();
 		for (int i = 0; i < elementos.size(); i++) {
 			Libro libro = new Libro();
-			if (elementos.get(i).contains(aux.toUpperCase())) {
+			aux2=StringUtils.stripAccents(elementos.get(i));
+			if (aux2.toUpperCase().contains(aux.toUpperCase())) {
 				String cadena = elementos.get(i);
 				char[] auxiliar = cadena.toCharArray();
 				int posI = 0;
