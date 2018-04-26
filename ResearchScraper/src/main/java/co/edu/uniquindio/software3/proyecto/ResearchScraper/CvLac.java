@@ -4,6 +4,10 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.jsoup.Connection.Response;
@@ -14,27 +18,57 @@ import org.jsoup.select.Elements;
 
 public class CvLac {
 
+	// Lista en la que se guardan las direcciones url de cada investigador
 	public ArrayList<String> urlSet;
+
+	// Lista en la que se guarda la informacion personal de cada invsestigador
 	public ArrayList<String> elemInfoPersonal = new ArrayList<>();
+
+	// Lista en la que se guardan la formacion academica de cada invsestigador
 	public ArrayList<String> elemFormacionAcam = new ArrayList<>();
+
+	// Lista en la que se guardan los eventos en los que ha participado de cada
+	// invsestigador
 	public ArrayList<String> elemEventos = new ArrayList<>();
+
+	// Lista en la que se guardan los articulos que ha escrito de cada
+	// invsestigador
 	public ArrayList<String> elemArticulos = new ArrayList<>();
+
+	// Lista en la que se guardan los libros que ha escrito de cada
+	// invsestigador
 	public ArrayList<String> elemLibros = new ArrayList<>();
+
+	// Lista en la que se guardan los informes de investigación que ha escrito
+	// de cada invsestigador
 	public ArrayList<String> elemInformes = new ArrayList<>();
+
+	// Lista en la que se guardan los proyectos en los que ha participado de
+	// cada invsestigador
 	public ArrayList<String> elemProyectos = new ArrayList<>();
+
+	// Lista en la que se guardan las publicaciones en revistas no
+	// especializadas que ha realizado de cada invsestigador
 	public ArrayList<String> elemPublicacionesN = new ArrayList<>();
-	public ArrayList<Investigador> investigadores = new ArrayList<>();
+
+	// Lista sincronizada en la que se guardan todos los investidagores junto a
+	// su respectiva informacion
+	public List<Investigador> investigadores = Collections.synchronizedList(new ArrayList<Investigador>());
 
 	/**
+	 * Metodo que realiza la extraccion de la estructura de una pagina web,
+	 * separa en las diferentas categorias la estructura de la pagina web y
+	 * hacer el llamado al metodo que asigna los datos a cada investigador
 	 * 
-	 * @param url
+	 * @param url,
+	 *            direccion url de un investigador
 	 */
 	public void extraer(String url) {
 
 		if (getStatusConnectionCode(url) == 200) {
 			// Obtengo el HTML de la web en un objeto Document
 			Document document = getHtmlDocument(url);
-			// Busco todas las entradas que estan dentro de:
+			// Busca todas las coincidencias que estan dentro de
 			Elements entradas = document.select("tbody>tr>td>table>tbody");
 
 			for (Element elem : entradas) {
@@ -75,19 +109,29 @@ public class CvLac {
 		}
 
 	}
-/**
- * 
- */
+
+	/**
+	 * Este metodo se encarga de hacer el llamado al metodo que lee un archivo
+	 * plano y carga el dataSet de url's, ademas, crea y lanza un pool de hilos
+	 * para mejorar el tiempo de ejecucion del programa
+	 */
 	public void scrapData() {
 		long startTime = System.currentTimeMillis();
+		long stopTime = 0;
+		long elapsedTime = 0;
 		leerDataSet();
+		ExecutorService executor = Executors.newFixedThreadPool(5);
 		for (int i = 0; i < urlSet.size(); i++) {
-			extraer(urlSet.get(i));
-			}
+			Runnable worker = new ArrayThread(urlSet.get(i), i, this);
+			executor.execute(worker);
+		}
+		executor.shutdown();
+		while (!executor.isTerminated()) {
+			stopTime = System.currentTimeMillis();
+			elapsedTime = stopTime - startTime;
 
-		long stopTime = System.currentTimeMillis();
-		long elapsedTime = stopTime - startTime;
-		System.out.println(elapsedTime);
+		}
+		System.err.println(elapsedTime);
 
 	}
 
@@ -131,17 +175,30 @@ public class CvLac {
 		}
 		return doc;
 	}
-/**
- * 
- * @param datosPersonales
- * @param formacion
- * @param eventos
- * @param articulos
- * @param libros
- * @param informes
- * @param proyectos
- * @param publicacionesN
- */
+
+	/**
+	 * Este metodo asigna cada uno de los elementos encontrados al investigador
+	 * respectivo y lo añade a la lista de investigadores
+	 * 
+	 * @param datosPersonales,
+	 *            lista con los datos personales de cada investigador
+	 * @param formacion,
+	 *            lista con la formacion academica de cada investigador
+	 * @param eventos,
+	 *            lista con los eventos en los que participo cada investigador
+	 * @param articulos,
+	 *            lista con los articulos escritos por cada investigador
+	 * @param libros,
+	 *            lista con los libros escritos por cada investigador
+	 * @param informes,
+	 *            lista con los informes de investigacion realizados por cada
+	 *            investigador
+	 * @param proyectos,
+	 *            lista con los proyectos realizados por cada investigador
+	 * @param publicacionesN,
+	 *            lista con las publicaciones en revistas no especializadas
+	 *            realizadas por cada investigador
+	 */
 	public void extraerDatos(ArrayList<String> datosPersonales, ArrayList<String> formacion, ArrayList<String> eventos,
 			ArrayList<String> articulos, ArrayList<String> libros, ArrayList<String> informes,
 			ArrayList<String> proyectos, ArrayList<String> publicacionesN) {
@@ -218,11 +275,16 @@ public class CvLac {
 		}
 
 	}
-/**
- * 
- * @param elementos
- * @param investigador
- */
+
+	/**
+	 * Metodo que extrae y asigna la formacion academica de cada investigador
+	 * 
+	 * @param elementos,
+	 *            Lista donde esta toda la informacion de la formacion academica
+	 *            del investigador
+	 * @param investigador,
+	 *            investigador al que se le a asignar la informacion
+	 */
 	public void extraerFormacionAcademica(ArrayList<String> elementos, Investigador investigador) {
 		for (int i = 0; i < elementos.size(); i++) {
 			if (elementos.get(i).equals("Formación Académica")) {
@@ -232,9 +294,15 @@ public class CvLac {
 	}
 
 	/**
+	 * Este metodo filtra la informacion y la segmenta en su respectiva
+	 * categoria para poder agregarla ordenadamente a las listas de cada uno de
+	 * los investigadores
 	 * 
-	 * @param elementos
-	 * @param investigador
+	 * @param elementos,
+	 *            Lista donde estan todos los eventos en los que ha participado
+	 *            el investigador
+	 * @param investigador,
+	 *            investigador al que se le a asignar la informacion
 	 */
 	public void extraerEventos(ArrayList<String> elementos, Investigador investigador) {
 		String nombre = "";
@@ -308,9 +376,15 @@ public class CvLac {
 	}
 
 	/**
+	 * Este metodo filtra la informacion y la segmenta en su respectiva
+	 * categoria para poder agregarla ordenadamente a las listas de cada uno de
+	 * los investigadores
 	 * 
-	 * @param elementos
-	 * @param investigador
+	 * @param elementos,
+	 *            Lista donde estan todos los articulos en los que ha
+	 *            participado el investigador
+	 * @param investigador,
+	 *            investigador al que se le a asignar la informacion
 	 */
 	public void extraerArticulos(ArrayList<String> elementos, Investigador investigador) {
 		boolean esEspecializada = false;
@@ -402,9 +476,15 @@ public class CvLac {
 	}
 
 	/**
+	 * Este metodo filtra la informacion y la segmenta en su respectiva
+	 * categoria para poder agregarla ordenadamente a las listas de cada uno de
+	 * los investigadores
 	 * 
-	 * @param elementos
-	 * @param investigador
+	 * @param elementos,
+	 *            Lista donde estan todos los libros en los que ha participado
+	 *            el investigador
+	 * @param investigador,
+	 *            investigador al que se le a asignar la informacion
 	 */
 	public void extraerLibros(ArrayList<String> elementos, Investigador investigador) {
 		String autores = "";
@@ -489,9 +569,15 @@ public class CvLac {
 	}
 
 	/**
+	 * Este metodo filtra la informacion y la segmenta en su respectiva
+	 * categoria para poder agregarla ordenadamente a las listas de cada uno de
+	 * los investigadores
 	 * 
-	 * @param elementos
-	 * @param investigador
+	 * @param elementos,
+	 *            Lista donde estan todos los proyectos en los que ha
+	 *            participado el investigador
+	 * @param investigador,
+	 *            investigador al que se le a asignar la informacion
 	 */
 	public void extraerProyectos(ArrayList<String> elementos, Investigador investigador) {
 		int posI;
@@ -527,9 +613,13 @@ public class CvLac {
 	}
 
 	/**
+	 * Metodo que elimina las etiquetas y caracteres especiales en la lista que
+	 * tiene la estructura de la pagina web del cvlac de cada investigador
 	 * 
-	 * @param elementos
-	 * @return
+	 * @param elementos,
+	 *            lista que contiene la estructura textual de la pagina web
+	 * @return Lista con la estructura de la pagina web sin las etiquetas y los
+	 *         caracteres especiales
 	 */
 	public ArrayList<String> limpiar(ArrayList<String> elementos) {
 		String etiquetas = "";
@@ -575,7 +665,8 @@ public class CvLac {
 	}
 
 	/**
-	 * 
+	 * Metodo que lee un archivo de texto y carga la lista con las url's de los
+	 * investigadores
 	 */
 	public void leerDataSet() {
 		try {
@@ -660,11 +751,11 @@ public class CvLac {
 		this.elemPublicacionesN = elemPublicacionesN;
 	}
 
-	public ArrayList<Investigador> getInvestigadores() {
+	public List<Investigador> getInvestigadores() {
 		return investigadores;
 	}
 
-	public void setInvestigadores(ArrayList<Investigador> investigadores) {
+	public void setInvestigadores(List<Investigador> investigadores) {
 		this.investigadores = investigadores;
 	}
 

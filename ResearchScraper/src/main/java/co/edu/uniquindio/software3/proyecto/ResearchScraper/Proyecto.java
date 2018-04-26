@@ -6,7 +6,7 @@ public class Proyecto {
 	private String tipo;
 	private String nombre;
 	private String fecha;
-	
+
 	public Proyecto(int id, String tipo, String nombre, String fecha) {
 		this.id = id;
 		this.tipo = tipo;
@@ -48,7 +48,5 @@ public class Proyecto {
 	public void setFecha(String fecha) {
 		this.fecha = fecha;
 	}
-	
-	
-	
+
 }

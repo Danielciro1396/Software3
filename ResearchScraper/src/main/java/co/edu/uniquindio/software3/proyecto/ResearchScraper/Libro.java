@@ -8,7 +8,7 @@ public class Libro {
 	private String lugar;
 	private String anio;
 	private String editorial;
-	
+
 	public Libro(int id, String autores, String titulo, String lugar, String anio, String editorial) {
 		this.id = id;
 		this.autores = autores;
@@ -68,7 +68,5 @@ public class Libro {
 	public void setEditorial(String editorial) {
 		this.editorial = editorial;
 	}
-	
-	
-	
+
 }

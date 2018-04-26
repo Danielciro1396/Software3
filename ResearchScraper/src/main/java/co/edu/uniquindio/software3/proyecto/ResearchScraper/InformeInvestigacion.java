@@ -7,7 +7,7 @@ public class InformeInvestigacion {
 	private String titulo;
 	private String lugar;
 	private String anio;
-	
+
 	public InformeInvestigacion(int id, String autores, String titulo, String lugar, String anio) {
 		this.id = id;
 		this.autores = autores;
@@ -58,6 +58,5 @@ public class InformeInvestigacion {
 	public void setAnio(String anio) {
 		this.anio = anio;
 	}
-	
-	
+
 }

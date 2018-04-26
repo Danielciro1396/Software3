@@ -8,7 +8,7 @@ public class EventoCientifico {
 	private String fecha;
 	private String lugar;
 	private String rol;
-	
+
 	public EventoCientifico(int id, String nombre, String tipo, String ambito, String fecha, String lugar, String rol) {
 		this.id = id;
 		this.nombre = nombre;
@@ -20,7 +20,7 @@ public class EventoCientifico {
 	}
 
 	public EventoCientifico() {
-	
+
 	}
 
 	public int getId() {
@@ -78,7 +78,5 @@ public class EventoCientifico {
 	public void setRol(String rol) {
 		this.rol = rol;
 	}
-	
-	
-	
+
 }
