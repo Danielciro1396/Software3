@@ -29,11 +29,13 @@ public class GrupLac {
 
 	public ArrayList<String> elemInformes = new ArrayList<>();
 
-	public ArrayList<String> softwares = new ArrayList<>();
+	public ArrayList<String> elemSoftwares = new ArrayList<>();
 
-	public ArrayList<String> innovaciones = new ArrayList<>();
+	public ArrayList<String> elemInnovaciones = new ArrayList<>();
 
-	public ArrayList<String> proyectos = new ArrayList<>();
+	public ArrayList<String> elemProyectos = new ArrayList<>();
+
+	public ArrayList<String> elemIntegrantes = new ArrayList<>();
 
 	public List<Grupo> grupos = Collections.synchronizedList(new ArrayList<Grupo>());
 
@@ -92,9 +94,17 @@ public class GrupLac {
 			// Obtengo el HTML de la web en un objeto Document
 			Document document = getHtmlDocument(url);
 			// Busca todas las coincidencias que estan dentro de
-			Elements entradas = document.select("body");
+			Elements entradas = document.select("tbody");
+
+			Elements entradas2 = document.select("span.celdaEncabezado");
 
 			String nombre = "";
+
+			for (Element elem : entradas2) {
+				if (elem.toString().contains("span class")) {
+					elemInformacion.add(elem.text());
+				}
+			}
 
 			for (Element elem : entradas) {
 
@@ -106,36 +116,38 @@ public class GrupLac {
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
+				if (elem.text().contains("Datos básicos")) {
+					elemInformacion.add(elem.toString());
+				}
 
-				// if (elem.text().contains("Nombre en citaciones")) {
-				// elemInformacion.add(elem.toString());
-				// }
-				// if (elem.text().contains("Formación Académica")) {
-				// elemCapLibros.add(elem.toString());
-				// }
-				// if (elem.text().contains("Eventos científicos")) {
-				// elemEventos.add(elem.toString());
-				// }
-				// if (elem.text().contains("Artículos")) {
-				// elemArticulos.add(elem.toString());
-				// }
-				// if (elem.text().contains("Libros")) {
-				// elemLibros.add(elem.toString());
-				// }
-				// if (elem.text().contains("Informes de investigación")) {
-				// elemInformes.add(elem.toString());
-				// }
-				// if (elem.text().contains("Proyectos")) {
-				// softwares.add(elem.toString());
-				// }
-				// if (elem.text().contains("Textos en publicaciones no
-				// científicas")) {
-				// innovaciones.add(elem.toString());
-				// }
-				// if (elem.text().contains("Textos en publicaciones no
-				// científicas")) {
-				// proyectos.add(elem.toString());
-				// }
+				if (elem.text().contains("Integrantes del grupo")) {
+					elemIntegrantes.add(elem.toString());
+				}
+				if (elem.text().contains("Libros publicados")) {
+					elemLibros.add(elem.toString());
+				}
+
+				if (elem.text().contains("Artículos publicados")) {
+					elemArticulos.add(elem.toString());
+				}
+				if (elem.text().contains("Eventos Científicos")) {
+					elemEventos.add(elem.toString());
+				}
+				if (elem.text().contains("Capítulos de libro publicados")) {
+					elemCapLibros.add(elem.toString());
+				}
+				if (elem.text().contains("Informes de investigación")) {
+					elemInformes.add(elem.toString());
+				}
+				if (elem.text().contains("Softwares")) {
+					elemSoftwares.add(elem.toString());
+				}
+				if (elem.text().contains("Innovaciones")) {
+					elemInnovaciones.add(elem.toString());
+				}
+				if (elem.toString().contains("<td class=\"celdaEncabezado\" colspan=\"2\">Proyectos</td>")) {
+					elemProyectos.add(elem.toString());
+				}
 			}
 
 		} else {

@@ -7,18 +7,15 @@ public class Grupo {
 	private String añoFundación;
 	private String lider;
 	private String clasificacion;
-	private String AreaDeConocimiento;
-	private String instituciones;
-	private ArrayList<String> lineasDeInvestigacion;
+	private String areaDeConocimiento;
 	private ArrayList<Articulo> articulos;
 	private ArrayList<EventoCientifico> eventos;
 	private ArrayList<InformeInvestigacion> informesInvestigacion;
 	private ArrayList<Innovacion> innovaciones;
 	private ArrayList<Libro> libros;
 	private ArrayList<Software> softwares;
-	
+
 	public Grupo(String nombre, String añoFundación, String lider, String clasificacion, String areaDeConocimiento,
-			String instituciones, ArrayList<String> lineasDeInvestigacion, 
 			ArrayList<Articulo> articulos, ArrayList<EventoCientifico> eventos,
 			ArrayList<InformeInvestigacion> informesInvestigacion, ArrayList<Innovacion> innovaciones,
 			ArrayList<Libro> libros, ArrayList<Software> softwares) {
@@ -26,9 +23,7 @@ public class Grupo {
 		this.añoFundación = añoFundación;
 		this.lider = lider;
 		this.clasificacion = clasificacion;
-		AreaDeConocimiento = areaDeConocimiento;
-		this.instituciones = instituciones;
-		this.lineasDeInvestigacion = lineasDeInvestigacion;
+		this.areaDeConocimiento = areaDeConocimiento;
 		this.articulos = articulos;
 		this.eventos = eventos;
 		this.informesInvestigacion = informesInvestigacion;
@@ -73,27 +68,11 @@ public class Grupo {
 	}
 
 	public String getAreaDeConocimiento() {
-		return AreaDeConocimiento;
+		return areaDeConocimiento;
 	}
 
 	public void setAreaDeConocimiento(String areaDeConocimiento) {
-		AreaDeConocimiento = areaDeConocimiento;
-	}
-
-	public String getInstituciones() {
-		return instituciones;
-	}
-
-	public void setInstituciones(String instituciones) {
-		this.instituciones = instituciones;
-	}
-
-	public ArrayList<String> getLineasDeInvestigacion() {
-		return lineasDeInvestigacion;
-	}
-
-	public void setLineasDeInvestigacion(ArrayList<String> lineasDeInvestigacion) {
-		this.lineasDeInvestigacion = lineasDeInvestigacion;
+		this.areaDeConocimiento = areaDeConocimiento;
 	}
 
 	public ArrayList<Articulo> getArticulos() {
@@ -143,7 +122,5 @@ public class Grupo {
 	public void setSoftwares(ArrayList<Software> softwares) {
 		this.softwares = softwares;
 	}
-	
-	
-	
+
 }

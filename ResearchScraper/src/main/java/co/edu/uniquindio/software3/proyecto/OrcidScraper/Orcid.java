@@ -7,16 +7,12 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
-
-import co.edu.uniquindio.software3.proyecto.ResearchScraper.ArrayThread;
 
 public class Orcid {
 	
@@ -35,18 +31,11 @@ public class Orcid {
 		long stopTime = 0;
 		long elapsedTime = 0;
 		leerDataSet();
-//		ExecutorService executor = Executors.newFixedThreadPool(5);
 		for (int i = 0; i < urlSet.size(); i++) {
-//			Runnable worker = new ArrayThread(urlSet.get(i), i, 2, null, null, this);
-//			executor.execute(worker);
+
 			extraer(urlSet.get(i));
 		}
-//		executor.shutdown();
-//		while (!executor.isTerminated()) {
-//			stopTime = System.currentTimeMillis();
-//			elapsedTime = stopTime - startTime;
-//
-//		}
+
 		stopTime = System.currentTimeMillis();
 		elapsedTime = stopTime - startTime;
 		System.err.println(elapsedTime);
@@ -64,8 +53,10 @@ public class Orcid {
 			FileReader f = new FileReader("src//main//java//datasets//DatasetOrcid.txt");
 			BufferedReader b = new BufferedReader(f);
 			while ((cadena = b.readLine()) != null) {
+				
 				String url = "https://orcid.org/"
 						+ cadena;
+				System.out.println(url);
 				urlSet.add(url);
 			}
 			b.close();
@@ -87,6 +78,7 @@ public class Orcid {
 
 		// Se inicializa el driver para la extracción.
 		System.setProperty("webdriver.chrome.driver", "src//main//java//driver//chromedriver.exe");
+		System.out.println("1");
 		ChromeOptions options = new ChromeOptions();
 		options.addArguments("--headless");
 		WebDriver driver = new ChromeDriver(options);
@@ -138,7 +130,7 @@ public class Orcid {
 		setInvestigadores(investigadores);
 
 		driver.close();
-		System.out.println("1");
+		System.out.println("2");
 		driver.quit();
 
 		return inv;

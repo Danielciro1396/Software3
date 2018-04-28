@@ -10,16 +10,15 @@ public class ArrayThread implements Runnable {
 	public int inicio;
 	GrupLac grupLac;
 	CvLac cvLac;
-	Orcid orcid;
 	public int bandera;
 
-	public ArrayThread(String url, int inicio, int bandera, CvLac cvLac,  GrupLac grupLac, Orcid orcid) {
+	public ArrayThread(String url, int inicio, int bandera, CvLac cvLac,  GrupLac grupLac) {
 		this.url = url;
 		this.inicio = inicio;
 		this.cvLac = cvLac;
 		this.bandera = bandera;
 		this.grupLac = grupLac;
-		this.orcid = orcid;
+		
 	}
 
 	/**
@@ -36,10 +35,6 @@ public class ArrayThread implements Runnable {
 //			grupLac.extraer(url);
 //
 //			System.out.println(inicio + " " + url);
-		}else if(bandera == 2){
-			orcid.scrapData();
-
-			System.out.println(inicio + " " + url);
 		}
 
 	}

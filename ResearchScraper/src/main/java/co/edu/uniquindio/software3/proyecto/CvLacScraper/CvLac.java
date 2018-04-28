@@ -64,6 +64,72 @@ public class CvLac {
 	public List<Investigador> investigadores = Collections.synchronizedList(new ArrayList<Investigador>());
 
 	/**
+	 * Este metodo se encarga de hacer el llamado al metodo que lee un archivo
+	 * plano y carga el dataSet de url's, ademas, crea y lanza un pool de hilos
+	 * para mejorar el tiempo de ejecucion del programa
+	 */
+	public void scrapData() {
+		long startTime = System.currentTimeMillis();
+		long stopTime = 0;
+		long elapsedTime = 0;
+		leerDataSet();
+		ExecutorService executor = Executors.newFixedThreadPool(5);
+		for (int i = 0; i < urlSet.size(); i++) {
+			Runnable worker = new ArrayThread(urlSet.get(i), i, 0, this, null);
+			executor.execute(worker);
+		}
+		executor.shutdown();
+		while (!executor.isTerminated()) {
+			stopTime = System.currentTimeMillis();
+			elapsedTime = stopTime - startTime;
+
+		}
+		System.err.println(elapsedTime);
+
+	}
+
+	/**
+	 * Método provisto por JSoup para comprobar el Status code de la respuesta
+	 * que recibo al hacer la petición Codigos: 200 OK 300 Multiple Choices 301
+	 * Moved Permanently 305 Use Proxy 400 Bad Request 403 Forbidden 404 Not
+	 * Found 500 Internal Server Error 502 Bad Gateway 503 Service Unavailable
+	 * 
+	 * @param url,
+	 *            el enlace de la página web a analizar.
+	 * @return Status Code, el código que identifica el estado de la página.
+	 */
+	public int getStatusConnectionCode(String url) {
+
+		Response response = null;
+
+		try {
+			response = Jsoup.connect(url).userAgent("Mozilla/5.0").timeout(100000).ignoreHttpErrors(true).execute();
+		} catch (IOException ex) {
+			System.out.println("Excepción al obtener el Status Code: " + ex.getMessage());
+		}
+		return response.statusCode();
+	}
+
+	/**
+	 * Método que retorna un objeto de la clase Document con el contenido del
+	 * HTML de la web para poder ser parseado posteriormente con JSoup
+	 * 
+	 * @param url,
+	 *            el enlace de la página web a analizar.
+	 * @return Documento con el HTML de la página en cuestión.
+	 */
+	public Document getHtmlDocument(String url) {
+
+		Document doc = null;
+		try {
+			doc = Jsoup.connect(url).userAgent("Mozilla/5.0").timeout(100000).get();
+		} catch (IOException ex) {
+			System.out.println("Excepción al obtener el HTML de la página" + ex.getMessage());
+		}
+		return doc;
+	}
+	
+	/**
 	 * Metodo que realiza la extraccion de la estructura de una pagina web,
 	 * separa en las diferentas categorias la estructura de la pagina web y
 	 * hacer el llamado al metodo que asigna los datos a cada investigador
@@ -118,71 +184,7 @@ public class CvLac {
 
 	}
 
-	/**
-	 * Este metodo se encarga de hacer el llamado al metodo que lee un archivo
-	 * plano y carga el dataSet de url's, ademas, crea y lanza un pool de hilos
-	 * para mejorar el tiempo de ejecucion del programa
-	 */
-	public void scrapData() {
-		long startTime = System.currentTimeMillis();
-		long stopTime = 0;
-		long elapsedTime = 0;
-		leerDataSet();
-		ExecutorService executor = Executors.newFixedThreadPool(5);
-		for (int i = 0; i < urlSet.size(); i++) {
-			Runnable worker = new ArrayThread(urlSet.get(i), i, 0, this, null, null);
-			executor.execute(worker);
-		}
-		executor.shutdown();
-		while (!executor.isTerminated()) {
-			stopTime = System.currentTimeMillis();
-			elapsedTime = stopTime - startTime;
-
-		}
-		System.err.println(elapsedTime);
-
-	}
-
-	/**
-	 * Método provisto por JSoup para comprobar el Status code de la respuesta
-	 * que recibo al hacer la petición Codigos: 200 OK 300 Multiple Choices 301
-	 * Moved Permanently 305 Use Proxy 400 Bad Request 403 Forbidden 404 Not
-	 * Found 500 Internal Server Error 502 Bad Gateway 503 Service Unavailable
-	 * 
-	 * @param url,
-	 *            el enlace de la página web a analizar.
-	 * @return Status Code, el código que identifica el estado de la página.
-	 */
-	public int getStatusConnectionCode(String url) {
-
-		Response response = null;
-
-		try {
-			response = Jsoup.connect(url).userAgent("Mozilla/5.0").timeout(100000).ignoreHttpErrors(true).execute();
-		} catch (IOException ex) {
-			System.out.println("Excepción al obtener el Status Code: " + ex.getMessage());
-		}
-		return response.statusCode();
-	}
-
-	/**
-	 * Método que retorna un objeto de la clase Document con el contenido del
-	 * HTML de la web para poder ser parseado posteriormente con JSoup
-	 * 
-	 * @param url,
-	 *            el enlace de la página web a analizar.
-	 * @return Documento con el HTML de la página en cuestión.
-	 */
-	public Document getHtmlDocument(String url) {
-
-		Document doc = null;
-		try {
-			doc = Jsoup.connect(url).userAgent("Mozilla/5.0").timeout(100000).get();
-		} catch (IOException ex) {
-			System.out.println("Excepción al obtener el HTML de la página" + ex.getMessage());
-		}
-		return doc;
-	}
+	
 
 	/**
 	 * Este metodo asigna cada uno de los elementos encontrados al investigador
