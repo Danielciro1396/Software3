@@ -1,10 +1,14 @@
 package co.edu.uniquindio.software3.proyecto.OrcidScraper;
 
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
@@ -12,9 +16,65 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 
+import co.edu.uniquindio.software3.proyecto.ResearchScraper.ArrayThread;
+
 public class Orcid {
+	
+	// Lista en la que se guardan las direcciones url de cada investigador
+		public ArrayList<String> urlSet;
 
 	private ArrayList<Investigador> investigadores = new ArrayList<Investigador>();
+	
+	/**
+	 * Este metodo se encarga de hacer el llamado al metodo que lee un archivo
+	 * plano y carga el dataSet de url's, ademas, crea y lanza un pool de hilos
+	 * para mejorar el tiempo de ejecucion del programa
+	 */
+	public void scrapData() {
+		long startTime = System.currentTimeMillis();
+		long stopTime = 0;
+		long elapsedTime = 0;
+		leerDataSet();
+//		ExecutorService executor = Executors.newFixedThreadPool(5);
+		for (int i = 0; i < urlSet.size(); i++) {
+//			Runnable worker = new ArrayThread(urlSet.get(i), i, 2, null, null, this);
+//			executor.execute(worker);
+			extraer(urlSet.get(i));
+		}
+//		executor.shutdown();
+//		while (!executor.isTerminated()) {
+//			stopTime = System.currentTimeMillis();
+//			elapsedTime = stopTime - startTime;
+//
+//		}
+		stopTime = System.currentTimeMillis();
+		elapsedTime = stopTime - startTime;
+		System.err.println(elapsedTime);
+
+	}
+
+	/**
+	 * Metodo que lee un archivo de texto y carga la lista con las url's de los
+	 * investigadores
+	 */
+	public void leerDataSet() {
+		try {
+			urlSet = new ArrayList<String>();
+			String cadena;
+			FileReader f = new FileReader("src//main//java//datasets//DatasetOrcid.txt");
+			BufferedReader b = new BufferedReader(f);
+			while ((cadena = b.readLine()) != null) {
+				String url = "https://orcid.org/"
+						+ cadena;
+				urlSet.add(url);
+			}
+			b.close();
+
+		} catch (IOException ex) {
+			ex.printStackTrace();
+
+		}
+	}
 
 	/**
 	 * Método que extrae y organiza los datos de un investigador
@@ -23,15 +83,13 @@ public class Orcid {
 	 *            La url del perfil de ORCID del investigador
 	 * @throws UrlOrcidInvalidaException
 	 */
-	public Investigador scrapData(String url) {
+	public Investigador extraer(String url) {
 
 		// Se inicializa el driver para la extracción.
-		System.setProperty("webdriver.chrome.driver", "chromedriver.exe");
+		System.setProperty("webdriver.chrome.driver", "src//main//java//driver//chromedriver.exe");
 		ChromeOptions options = new ChromeOptions();
 		options.addArguments("--headless");
 		WebDriver driver = new ChromeDriver(options);
-		org.openqa.selenium.Point point = new org.openqa.selenium.Point(-10000, 0);
-		driver.manage().window().setPosition(point);
 		driver.get(url);
 
 		//
@@ -80,6 +138,7 @@ public class Orcid {
 		setInvestigadores(investigadores);
 
 		driver.close();
+		System.out.println("1");
 		driver.quit();
 
 		return inv;

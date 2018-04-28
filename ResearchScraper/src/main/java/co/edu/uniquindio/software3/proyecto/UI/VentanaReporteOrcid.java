@@ -43,7 +43,7 @@ public class VentanaReporteOrcid extends JFrame {
 		contentPane.setBackground(Color.WHITE);
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		contentPane.setLayout(new BorderLayout(0, 0));
-		os.scrapData(url);
+		os.extraer(url);
 
 		DefaultCategoryDataset dcd = new DefaultCategoryDataset();
 		ArrayList<Investigador> lista = os.getListaInvestigadores();

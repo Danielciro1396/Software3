@@ -13,10 +13,12 @@ public class Investigador {
 	private ArrayList<InformeInvestigacion> informesInvestigaciones;
 	private ArrayList<Libro> libros;
 	private ArrayList<Proyecto> proyectos;
+	private String horas;
+	private String vinculacion;
 
 	public Investigador(int id, String nombre, String categoria, String formacion, ArrayList<EventoCientifico> eventos,
 			ArrayList<Articulo> articulos, ArrayList<InformeInvestigacion> informesInvestigaciones,
-			ArrayList<Libro> libros, ArrayList<Proyecto> proyectos) {
+			ArrayList<Libro> libros, ArrayList<Proyecto> proyectos, String horas, String vinculacion) {
 		this.id = id;
 		this.nombre = nombre;
 		this.categoria = categoria;
@@ -26,6 +28,8 @@ public class Investigador {
 		this.informesInvestigaciones = informesInvestigaciones;
 		this.libros = libros;
 		this.proyectos = proyectos;
+		this.horas=horas;
+		this.vinculacion= vinculacion;
 	}
 
 	public Investigador() {
@@ -101,6 +105,22 @@ public class Investigador {
 
 	public void setProyectos(ArrayList<Proyecto> proyectos) {
 		this.proyectos = proyectos;
+	}
+
+	public String getHoras() {
+		return horas;
+	}
+
+	public void setHoras(String horas) {
+		this.horas = horas;
+	}
+
+	public String getVinculacion() {
+		return vinculacion;
+	}
+
+	public void setVinculacion(String vinculacion) {
+		this.vinculacion = vinculacion;
 	}
 
 }

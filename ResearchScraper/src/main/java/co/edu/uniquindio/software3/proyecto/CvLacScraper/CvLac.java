@@ -20,6 +20,12 @@ import co.edu.uniquindio.software3.proyecto.ResearchScraper.ArrayThread;
 
 public class CvLac {
 
+	///////////////////////////////////////////
+
+	// Guardar informacion en uppercase y limpio;
+
+	//////////////////////////////////////
+
 	// Lista en la que se guardan las direcciones url de cada investigador
 	public ArrayList<String> urlSet;
 
@@ -124,7 +130,7 @@ public class CvLac {
 		leerDataSet();
 		ExecutorService executor = Executors.newFixedThreadPool(5);
 		for (int i = 0; i < urlSet.size(); i++) {
-			Runnable worker = new ArrayThread(urlSet.get(i), i, this,0, null, null);
+			Runnable worker = new ArrayThread(urlSet.get(i), i, 0, this, null, null);
 			executor.execute(worker);
 		}
 		executor.shutdown();
@@ -674,7 +680,7 @@ public class CvLac {
 		try {
 			urlSet = new ArrayList<String>();
 			String cadena;
-			FileReader f = new FileReader("d://Dataset.txt");
+			FileReader f = new FileReader("src//main//java//datasets//DatasetCvLac.txt");
 			BufferedReader b = new BufferedReader(f);
 			while ((cadena = b.readLine()) != null) {
 				String url = "http://scienti.colciencias.gov.co:8081/cvlac/visualizador/generarCurriculoCv.do?cod_rh="

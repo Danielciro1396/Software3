@@ -13,7 +13,7 @@ public class ArrayThread implements Runnable {
 	Orcid orcid;
 	public int bandera;
 
-	public ArrayThread(String url, int inicio, CvLac cvLac, int bandera, GrupLac grupLac, Orcid orcid) {
+	public ArrayThread(String url, int inicio, int bandera, CvLac cvLac,  GrupLac grupLac, Orcid orcid) {
 		this.url = url;
 		this.inicio = inicio;
 		this.cvLac = cvLac;
@@ -37,7 +37,7 @@ public class ArrayThread implements Runnable {
 //
 //			System.out.println(inicio + " " + url);
 		}else if(bandera == 2){
-			orcid.scrapData(url);
+			orcid.scrapData();
 
 			System.out.println(inicio + " " + url);
 		}

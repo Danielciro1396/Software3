@@ -10,7 +10,6 @@ public class Grupo {
 	private String AreaDeConocimiento;
 	private String instituciones;
 	private ArrayList<String> lineasDeInvestigacion;
-	private ArrayList<Integrante> integrantes;
 	private ArrayList<Articulo> articulos;
 	private ArrayList<EventoCientifico> eventos;
 	private ArrayList<InformeInvestigacion> informesInvestigacion;
@@ -19,11 +18,10 @@ public class Grupo {
 	private ArrayList<Software> softwares;
 	
 	public Grupo(String nombre, String añoFundación, String lider, String clasificacion, String areaDeConocimiento,
-			String instituciones, ArrayList<String> lineasDeInvestigacion, ArrayList<Integrante> integrantes,
+			String instituciones, ArrayList<String> lineasDeInvestigacion, 
 			ArrayList<Articulo> articulos, ArrayList<EventoCientifico> eventos,
 			ArrayList<InformeInvestigacion> informesInvestigacion, ArrayList<Innovacion> innovaciones,
 			ArrayList<Libro> libros, ArrayList<Software> softwares) {
-		super();
 		this.nombre = nombre;
 		this.añoFundación = añoFundación;
 		this.lider = lider;
@@ -31,7 +29,6 @@ public class Grupo {
 		AreaDeConocimiento = areaDeConocimiento;
 		this.instituciones = instituciones;
 		this.lineasDeInvestigacion = lineasDeInvestigacion;
-		this.integrantes = integrantes;
 		this.articulos = articulos;
 		this.eventos = eventos;
 		this.informesInvestigacion = informesInvestigacion;
@@ -41,7 +38,6 @@ public class Grupo {
 	}
 
 	public Grupo() {
-		super();
 	}
 
 	public String getNombre() {
@@ -98,14 +94,6 @@ public class Grupo {
 
 	public void setLineasDeInvestigacion(ArrayList<String> lineasDeInvestigacion) {
 		this.lineasDeInvestigacion = lineasDeInvestigacion;
-	}
-
-	public ArrayList<Integrante> getIntegrantes() {
-		return integrantes;
-	}
-
-	public void setIntegrantes(ArrayList<Integrante> integrantes) {
-		this.integrantes = integrantes;
 	}
 
 	public ArrayList<Articulo> getArticulos() {
