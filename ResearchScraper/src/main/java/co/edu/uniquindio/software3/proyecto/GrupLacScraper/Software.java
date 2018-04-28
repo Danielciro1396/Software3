@@ -1,4 +1,4 @@
-package co.edu.uniquindio.software3.proyecto.GrupLac;
+package co.edu.uniquindio.software3.proyecto.GrupLacScraper;
 
 public class Software {
 	private String nombre;

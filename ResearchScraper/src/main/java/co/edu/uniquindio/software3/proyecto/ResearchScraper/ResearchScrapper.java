@@ -1,5 +1,7 @@
 package co.edu.uniquindio.software3.proyecto.ResearchScraper;
 
+import co.edu.uniquindio.software3.proyecto.CvLacScraper.CvLac;
+
 /**
  * 
  *

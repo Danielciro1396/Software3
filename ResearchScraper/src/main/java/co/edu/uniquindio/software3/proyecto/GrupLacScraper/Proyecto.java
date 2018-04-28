@@ -1,4 +1,4 @@
-package co.edu.uniquindio.software3.proyecto.ResearchScraper;
+package co.edu.uniquindio.software3.proyecto.GrupLacScraper;
 
 public class Proyecto {
 
@@ -6,8 +6,9 @@ public class Proyecto {
 	private String tipo;
 	private String nombre;
 	private String fecha;
-
+	
 	public Proyecto(int id, String tipo, String nombre, String fecha) {
+		super();
 		this.id = id;
 		this.tipo = tipo;
 		this.nombre = nombre;
@@ -15,6 +16,7 @@ public class Proyecto {
 	}
 
 	public Proyecto() {
+		super();
 	}
 
 	public int getId() {
@@ -48,5 +50,6 @@ public class Proyecto {
 	public void setFecha(String fecha) {
 		this.fecha = fecha;
 	}
-
+	
+	
 }

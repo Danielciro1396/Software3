@@ -1,4 +1,4 @@
-package co.edu.uniquindio.software3.proyecto.GrupLac;
+package co.edu.uniquindio.software3.proyecto.GrupLacScraper;
 
 import java.io.IOException;
 

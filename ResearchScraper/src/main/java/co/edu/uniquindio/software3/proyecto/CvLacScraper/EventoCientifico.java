@@ -1,4 +1,4 @@
-package co.edu.uniquindio.software3.proyecto.ResearchScraper;
+package co.edu.uniquindio.software3.proyecto.CvLacScraper;
 
 public class EventoCientifico {
 	private int id;

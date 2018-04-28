@@ -14,7 +14,7 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
 
-import co.edu.uniquindio.software3.proyecto.ResearchScraper.CvLac;
+import co.edu.uniquindio.software3.proyecto.CvLacScraper.CvLac;
 
 public class VentanaPrincipal extends JFrame {
 

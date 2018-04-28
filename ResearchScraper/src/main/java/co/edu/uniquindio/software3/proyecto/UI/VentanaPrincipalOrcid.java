@@ -14,7 +14,7 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
 
-import co.edu.uniquindio.software3.proyecto.OrcidScraper.OrcidScraper;
+import co.edu.uniquindio.software3.proyecto.OrcidScraper.Orcid;
 
 public class VentanaPrincipalOrcid extends JFrame {
 
@@ -24,7 +24,7 @@ public class VentanaPrincipalOrcid extends JFrame {
 	private static final long serialVersionUID = 1L;
 	private JPanel contentPane;
 	private JTextField txtURL;
-	OrcidScraper os = new OrcidScraper();
+	Orcid os = new Orcid();
 	String url;
 
 	/**

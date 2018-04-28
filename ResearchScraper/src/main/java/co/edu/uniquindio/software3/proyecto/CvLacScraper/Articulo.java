@@ -1,22 +1,27 @@
-package co.edu.uniquindio.software3.proyecto.ResearchScraper;
+package co.edu.uniquindio.software3.proyecto.CvLacScraper;
 
-public class InformeInvestigacion {
+public class Articulo {
 
 	private int id;
+	private boolean esEspecializada;
 	private String autores;
 	private String titulo;
 	private String lugar;
+	private String nomRevista;
 	private String anio;
 
-	public InformeInvestigacion(int id, String autores, String titulo, String lugar, String anio) {
+	public Articulo(int id, boolean esEspecializada, String autores, String titulo, String lugar, String nomRevista,
+			String anio) {
 		this.id = id;
+		this.esEspecializada = esEspecializada;
 		this.autores = autores;
 		this.titulo = titulo;
 		this.lugar = lugar;
+		this.nomRevista = nomRevista;
 		this.anio = anio;
 	}
 
-	public InformeInvestigacion() {
+	public Articulo() {
 	}
 
 	public int getId() {
@@ -25,6 +30,14 @@ public class InformeInvestigacion {
 
 	public void setId(int id) {
 		this.id = id;
+	}
+
+	public boolean isEsEspecializada() {
+		return esEspecializada;
+	}
+
+	public void setEsEspecializada(boolean esEspecializada) {
+		this.esEspecializada = esEspecializada;
 	}
 
 	public String getAutores() {
@@ -49,6 +62,14 @@ public class InformeInvestigacion {
 
 	public void setLugar(String lugar) {
 		this.lugar = lugar;
+	}
+
+	public String getNomRevista() {
+		return nomRevista;
+	}
+
+	public void setNomRevista(String nomRevista) {
+		this.nomRevista = nomRevista;
 	}
 
 	public String getAnio() {

@@ -19,7 +19,7 @@ import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.data.category.DefaultCategoryDataset;
 
 import co.edu.uniquindio.software3.proyecto.OrcidScraper.Investigador;
-import co.edu.uniquindio.software3.proyecto.OrcidScraper.OrcidScraper;
+import co.edu.uniquindio.software3.proyecto.OrcidScraper.Orcid;
 import co.edu.uniquindio.software3.proyecto.OrcidScraper.Produccion;
 
 public class VentanaReporteOrcid extends JFrame {
@@ -29,7 +29,7 @@ public class VentanaReporteOrcid extends JFrame {
 	 */
 	private static final long serialVersionUID = 1L;
 	private JPanel contentPane;
-	OrcidScraper os = new OrcidScraper();
+	Orcid os = new Orcid();
 
 	/**
 	 * Create the frame.

@@ -1,26 +1,24 @@
-package co.edu.uniquindio.software3.proyecto.GrupLac;
+package co.edu.uniquindio.software3.proyecto.CvLacScraper;
 
-public class Articulo {
-	
+public class Libro {
+
 	private int id;
 	private String autores;
 	private String titulo;
 	private String lugar;
-	private String nomRevista;
 	private String anio;
-	
-	public Articulo(int id, String autores, String titulo, String lugar, String nomRevista, String anio) {
-		super();
+	private String editorial;
+
+	public Libro(int id, String autores, String titulo, String lugar, String anio, String editorial) {
 		this.id = id;
 		this.autores = autores;
 		this.titulo = titulo;
 		this.lugar = lugar;
-		this.nomRevista = nomRevista;
 		this.anio = anio;
+		this.editorial = editorial;
 	}
 
-	public Articulo() {
-		super();
+	public Libro() {
 	}
 
 	public int getId() {
@@ -55,14 +53,6 @@ public class Articulo {
 		this.lugar = lugar;
 	}
 
-	public String getNomRevista() {
-		return nomRevista;
-	}
-
-	public void setNomRevista(String nomRevista) {
-		this.nomRevista = nomRevista;
-	}
-
 	public String getAnio() {
 		return anio;
 	}
@@ -71,5 +61,12 @@ public class Articulo {
 		this.anio = anio;
 	}
 
-	
+	public String getEditorial() {
+		return editorial;
+	}
+
+	public void setEditorial(String editorial) {
+		this.editorial = editorial;
+	}
+
 }

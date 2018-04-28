@@ -12,7 +12,7 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 
-public class OrcidScraper {
+public class Orcid {
 
 	private ArrayList<Investigador> investigadores = new ArrayList<Investigador>();
 

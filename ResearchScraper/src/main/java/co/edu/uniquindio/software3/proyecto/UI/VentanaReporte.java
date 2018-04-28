@@ -18,9 +18,9 @@ import org.jfree.chart.plot.CategoryPlot;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.data.category.DefaultCategoryDataset;
 
-import co.edu.uniquindio.software3.proyecto.ResearchScraper.Articulo;
-import co.edu.uniquindio.software3.proyecto.ResearchScraper.CvLac;
-import co.edu.uniquindio.software3.proyecto.ResearchScraper.Investigador;
+import co.edu.uniquindio.software3.proyecto.CvLacScraper.Articulo;
+import co.edu.uniquindio.software3.proyecto.CvLacScraper.CvLac;
+import co.edu.uniquindio.software3.proyecto.CvLacScraper.Investigador;
 
 public class VentanaReporte extends JFrame {
 

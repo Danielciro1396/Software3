@@ -1,4 +1,4 @@
-package co.edu.uniquindio.software3.proyecto.ResearchScraper;
+package co.edu.uniquindio.software3.proyecto.CvLacScraper;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -15,6 +15,8 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+
+import co.edu.uniquindio.software3.proyecto.ResearchScraper.ArrayThread;
 
 public class CvLac {
 
@@ -122,7 +124,7 @@ public class CvLac {
 		leerDataSet();
 		ExecutorService executor = Executors.newFixedThreadPool(5);
 		for (int i = 0; i < urlSet.size(); i++) {
-			Runnable worker = new ArrayThread(urlSet.get(i), i, this);
+			Runnable worker = new ArrayThread(urlSet.get(i), i, this,0, null, null);
 			executor.execute(worker);
 		}
 		executor.shutdown();
