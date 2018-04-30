@@ -16,11 +16,11 @@ public class BdAccess {
 	          ("jdbc:oracle:thin:@localhost:1521:xe", "software3", "software3");
 	    Statement stmt = conn.createStatement();
 	    ResultSet rset =stmt.executeQuery(query);
-//	    while (rset.next())
-//	         System.out.println (rset.getString(2));   // Print col 1
+ //while (rset.next())
+//System.out.println (rset.getString(2));   // Print col 1
 	    stmt.close();
 		} catch (SQLException e) {
-		e.printStackTrace();
+			e.printStackTrace();
 		}
 	}
 }

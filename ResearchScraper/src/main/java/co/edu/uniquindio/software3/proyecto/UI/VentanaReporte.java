@@ -43,39 +43,39 @@ public class VentanaReporte extends JFrame {
 		contentPane.setBackground(Color.WHITE);
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 
-		DefaultCategoryDataset dcd = new DefaultCategoryDataset();
-		List<Investigador> lista = cv.getInvestigadores();
-		ArrayList<Articulo> listaProducciones = lista.get(0).getArticulos();
+//		DefaultCategoryDataset dcd = new DefaultCategoryDataset();
+//		List<Investigador> lista = cv.getInvestigadores();
+//		ArrayList<Articulo> listaProducciones = lista.get(0).getArticulos();
+//
+//		int anio = 2005;
+//		while (anio < 2019) {
+//			int cont = 0;
+//			for (int i = 0; i < listaProducciones.size(); i++) {
+//				if (Integer.parseInt(listaProducciones.get(i).getAnio()) == anio) {
+//					cont++;
+//				}
+//			}
+//			dcd.setValue(cont, "Publicaciones", anio + "");
+//			anio++;
+//		}
 
-		int anio = 2005;
-		while (anio < 2019) {
-			int cont = 0;
-			for (int i = 0; i < listaProducciones.size(); i++) {
-				if (Integer.parseInt(listaProducciones.get(i).getAnio()) == anio) {
-					cont++;
-				}
-			}
-			dcd.setValue(cont, "Publicaciones", anio + "");
-			anio++;
-		}
-
-		JPanel chart = new JPanel();
-		chart.setBackground(Color.WHITE);
-		chart.setBounds(10, 0, 697, 442);
-		contentPane.add(chart);
-
-		JFreeChart jchart = ChartFactory.createBarChart("Artículos Científicos por año (Según CvLAC)", "Año",
-				"Cantidad de publicaciones", dcd, PlotOrientation.VERTICAL, true, true, false);
-		CategoryPlot plot = jchart.getCategoryPlot();
-		plot.setRangeGridlinePaint(Color.BLACK);
-		ChartPanel chartPanel = new ChartPanel(jchart);
-		// contentPane.removeAll();
-
-		chartPanel.setLayout(null);
-		contentPane.updateUI();
-		setContentPane(contentPane);
-		contentPane.setLayout(null);
-		chart.add(chartPanel);
+//		JPanel chart = new JPanel();
+//		chart.setBackground(Color.WHITE);
+//		chart.setBounds(10, 0, 697, 442);
+//		contentPane.add(chart);
+//
+//		JFreeChart jchart = ChartFactory.createBarChart("Artículos Científicos por año (Según CvLAC)", "Año",
+//				"Cantidad de publicaciones", dcd, PlotOrientation.VERTICAL, true, true, false);
+//		CategoryPlot plot = jchart.getCategoryPlot();
+//		plot.setRangeGridlinePaint(Color.BLACK);
+//		ChartPanel chartPanel = new ChartPanel(jchart);
+//		// contentPane.removeAll();
+//
+//		chartPanel.setLayout(null);
+//		contentPane.updateUI();
+//		setContentPane(contentPane);
+//		contentPane.setLayout(null);
+//		chart.add(chartPanel);
 
 		JPanel panel = new JPanel();
 		panel.setBackground(Color.WHITE);

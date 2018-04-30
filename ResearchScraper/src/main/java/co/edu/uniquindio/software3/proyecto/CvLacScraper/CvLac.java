@@ -3,6 +3,7 @@ package co.edu.uniquindio.software3.proyecto.CvLacScraper;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -31,36 +32,7 @@ public class CvLac {
 	// Lista en la que se guardan las direcciones url de cada investigador
 	public ArrayList<String> urlSet;
 
-	// Lista en la que se guarda la informacion personal de cada invsestigador
-	public ArrayList<String> elemInfoPersonal = new ArrayList<>();
-
-	// Lista en la que se guardan la formacion academica de cada invsestigador
-	public ArrayList<String> elemFormacionAcam = new ArrayList<>();
-
-	// Lista en la que se guardan los eventos en los que ha participado de cada
-	// invsestigador
-	public ArrayList<String> elemEventos = new ArrayList<>();
-
-	// Lista en la que se guardan los articulos que ha escrito de cada
-	// invsestigador
-	public ArrayList<String> elemArticulos = new ArrayList<>();
-
-	// Lista en la que se guardan los libros que ha escrito de cada
-	// invsestigador
-	public ArrayList<String> elemLibros = new ArrayList<>();
-
-	// Lista en la que se guardan los informes de investigación que ha escrito
-	// de cada invsestigador
-	public ArrayList<String> elemInformes = new ArrayList<>();
-
-	// Lista en la que se guardan los proyectos en los que ha participado de
-	// cada invsestigador
-	public ArrayList<String> elemProyectos = new ArrayList<>();
-
-	// Lista en la que se guardan las publicaciones en revistas no
-	// especializadas que ha realizado de cada invsestigador
-	public ArrayList<String> elemPublicacionesN = new ArrayList<>();
-
+	
 	// Lista sincronizada en la que se guardan todos los investidagores junto a
 	// su respectiva informacion
 	public List<Investigador> investigadores = Collections.synchronizedList(new ArrayList<Investigador>());
@@ -71,14 +43,17 @@ public class CvLac {
 	 * mejorar el tiempo de ejecucion del programa
 	 */
 	public void scrapData() {
+		
 		long startTime = System.currentTimeMillis();
 		long stopTime = 0;
 		long elapsedTime = 0;
 		leerDataSet();
 		ExecutorService executor = Executors.newFixedThreadPool(5);
+		System.err.println(urlSet.size());
 		for (int i = 0; i < urlSet.size(); i++) {
 			Runnable worker = new ArrayThread(urlSet.get(i), i, 0, this, null);
 			executor.execute(worker);
+			//extraer(urlSet.get(i));
 		}
 		executor.shutdown();
 		while (!executor.isTerminated()) {
@@ -86,8 +61,9 @@ public class CvLac {
 			elapsedTime = stopTime - startTime;
 
 		}
-		// llenarBD();
+		//llenarBD();
 		System.err.println(elapsedTime);
+		System.out.println(investigadores.size());
 
 	}
 
@@ -143,6 +119,37 @@ public class CvLac {
 	public void extraer(String url) {
 
 		if (getStatusConnectionCode(url) == 200) {
+			// Lista en la que se guarda la informacion personal de cada invsestigador
+			ArrayList<String> elemInfoPersonal = new ArrayList<>();
+
+			// Lista en la que se guardan la formacion academica de cada invsestigador
+			ArrayList<String> elemFormacionAcam = new ArrayList<>();
+
+			// Lista en la que se guardan los eventos en los que ha participado de cada
+			// invsestigador
+			ArrayList<String> elemEventos = new ArrayList<>();
+
+			// Lista en la que se guardan los articulos que ha escrito de cada
+			// invsestigador
+			ArrayList<String> elemArticulos = new ArrayList<>();
+
+			// Lista en la que se guardan los libros que ha escrito de cada
+			// invsestigador
+			 ArrayList<String> elemLibros = new ArrayList<>();
+
+			// Lista en la que se guardan los informes de investigación que ha escrito
+			// de cada invsestigador
+			ArrayList<String> elemInformes = new ArrayList<>();
+
+			// Lista en la que se guardan los proyectos en los que ha participado de
+			// cada invsestigador
+			ArrayList<String> elemProyectos = new ArrayList<>();
+
+			// Lista en la que se guardan las publicaciones en revistas no
+			// especializadas que ha realizado de cada invsestigador
+			ArrayList<String> elemPublicacionesN = new ArrayList<>();
+
+			
 			// Obtengo el HTML de la web en un objeto Document
 			Document document = getHtmlDocument(url);
 			// Busca todas las coincidencias que estan dentro de
@@ -152,7 +159,7 @@ public class CvLac {
 
 				if (elem.text().contains("Nombre en citaciones")) {
 					elemInfoPersonal.add(elem.toString());
-				}
+				}				
 				if (elem.text().contains("Formación Académica")) {
 					elemFormacionAcam.add(elem.toString());
 				}
@@ -214,7 +221,16 @@ public class CvLac {
 			ArrayList<String> articulos, ArrayList<String> libros, ArrayList<String> informes,
 			ArrayList<String> proyectos, ArrayList<String> publicacionesN) {
 		Investigador investigador = new Investigador();
+		if(datosPersonales.size()==0){
+			investigador.setNombre("PERFIL PRIVADO");
+			investigadores.add(investigador);
+			System.err.println(investigador.getNombre());
+			String aux = Constantes.INSERT_INVES + "('" + investigador.getNombre().toUpperCase()+"')";
+			BdAccess bdA = new BdAccess();
+			bdA.conexion(aux);
+		}else{
 		try {
+	
 			for (int i = 0; i < datosPersonales.size(); i++) {
 				if (datosPersonales.get(i).contains("CATEGORÍA")) {
 					investigador.setCategoria(datosPersonales.get(i + 1));
@@ -229,31 +245,31 @@ public class CvLac {
 
 		try {
 			extraerFormacionAcademica(formacion, investigador);
-		} catch (NullPointerException e) {
+		} catch (Exception e) {
 
 		}
 
 		try {
 			extraerEventos(eventos, investigador);
-		} catch (NullPointerException e) {
+		} catch (Exception e) {
 
 		}
 		try {
 			extraerArticulos(articulos, investigador);
-		} catch (NullPointerException e) {
+		} catch (Exception e) {
 
 		}
 		try {
 			extraerLibros(libros, investigador);
-		} catch (NullPointerException e) {
+		} catch (Exception e) {
 
 		}
 		try {
 			extraerProyectos(proyectos, investigador);
-		} catch (NullPointerException e) {
+		} catch (Exception e) {
 
 		}
-
+		
 		try {
 			// boolean estaRepetido = false;
 			// for (int i = 0; i < investigadores.size(); i++) {
@@ -281,14 +297,21 @@ public class CvLac {
 			// investigadores.add(investigador2);
 			// System.out.println(investigador2.getNombre());
 			// } else {
-			investigadores.add(investigador);
+			
 			// System.out.println(investigador.getNombre());
 			// }
 
+			investigadores.add(investigador);
+			System.out.println(investigador.getNombre());
+			String aux = Constantes.INSERT_INVES + "('" + investigador.getNombre().toUpperCase()+"')";
+			BdAccess bdA = new BdAccess();
+			bdA.conexion(aux);
+			
 		} catch (Exception e) {
 
 		}
-
+		}
+		
 	}
 
 	/**
@@ -730,91 +753,91 @@ public class CvLac {
 		String aux;
 		System.out.println(investigadores.size());
 		for (int i = 0; i < investigadores.size(); i++) {
-			aux = Constantes.INSERT_INVES + "(" + (i + 1) + ", '" + investigadores.get(i).getNombre().toUpperCase()
-					+ "')";
+			aux = Constantes.INSERT_INVES + "('" + investigadores.get(i).getNombre().toUpperCase()+"')";
 			// System.out.println(i+1+ investigadores.get(i).getNombre().toUpperCase());
 			bdA.conexion(aux);
+			
 		}
 	}
 
-	public ArrayList<String> getElemInfoPersonal() {
-		return elemInfoPersonal;
-	}
-
-	public void setElemInfoPersonal(ArrayList<String> elemInfoPersonal) {
-		this.elemInfoPersonal = elemInfoPersonal;
-	}
-
-	public ArrayList<String> getElemFormacionAcam() {
-		return elemFormacionAcam;
-	}
-
-	public void setElemFormacionAcam(ArrayList<String> elemFormacionAcam) {
-		this.elemFormacionAcam = elemFormacionAcam;
-	}
-
-	public ArrayList<String> getElemEventos() {
-		return elemEventos;
-	}
-
-	public void setElemEventos(ArrayList<String> elemEventos) {
-		this.elemEventos = elemEventos;
-	}
-
-	public ArrayList<String> getElemArticulos() {
-		return elemArticulos;
-	}
-
-	public void setElemArticulos(ArrayList<String> elemArticulos) {
-		this.elemArticulos = elemArticulos;
-	}
-
-	public ArrayList<String> getElemLibros() {
-		return elemLibros;
-	}
-
-	public void setElemLibros(ArrayList<String> elemLibros) {
-		this.elemLibros = elemLibros;
-	}
-
-	public ArrayList<String> getElemInformes() {
-		return elemInformes;
-	}
-
-	public void setElemInformes(ArrayList<String> elemInformes) {
-		this.elemInformes = elemInformes;
-	}
-
-	public ArrayList<String> getElemProyectos() {
-		return elemProyectos;
-	}
-
-	public void setElemProyectos(ArrayList<String> elemProyectos) {
-		this.elemProyectos = elemProyectos;
-	}
-
-	public ArrayList<String> getElemPublicacionesN() {
-		return elemPublicacionesN;
-	}
-
-	public void setElemPublicacionesN(ArrayList<String> elemPublicacionesN) {
-		this.elemPublicacionesN = elemPublicacionesN;
-	}
-
-	public List<Investigador> getInvestigadores() {
-		return investigadores;
-	}
-
-	public void setInvestigadores(List<Investigador> investigadores) {
-		this.investigadores = investigadores;
-	}
-
-	public ArrayList<String> getUrlSet() {
-		return urlSet;
-	}
-
-	public void setUrlSet(ArrayList<String> urlSet) {
-		this.urlSet = urlSet;
-	}
+//	public ArrayList<String> getElemInfoPersonal() {
+//		return elemInfoPersonal;
+//	}
+//
+//	public void setElemInfoPersonal(ArrayList<String> elemInfoPersonal) {
+//		this.elemInfoPersonal = elemInfoPersonal;
+//	}
+//
+//	public ArrayList<String> getElemFormacionAcam() {
+//		return elemFormacionAcam;
+//	}
+//
+//	public void setElemFormacionAcam(ArrayList<String> elemFormacionAcam) {
+//		this.elemFormacionAcam = elemFormacionAcam;
+//	}
+//
+//	public ArrayList<String> getElemEventos() {
+//		return elemEventos;
+//	}
+//
+//	public void setElemEventos(ArrayList<String> elemEventos) {
+//		this.elemEventos = elemEventos;
+//	}
+//
+//	public ArrayList<String> getElemArticulos() {
+//		return elemArticulos;
+//	}
+//
+//	public void setElemArticulos(ArrayList<String> elemArticulos) {
+//		this.elemArticulos = elemArticulos;
+//	}
+//
+//	public ArrayList<String> getElemLibros() {
+//		return elemLibros;
+//	}
+//
+//	public void setElemLibros(ArrayList<String> elemLibros) {
+//		this.elemLibros = elemLibros;
+//	}
+//
+//	public ArrayList<String> getElemInformes() {
+//		return elemInformes;
+//	}
+//
+//	public void setElemInformes(ArrayList<String> elemInformes) {
+//		this.elemInformes = elemInformes;
+//	}
+//
+//	public ArrayList<String> getElemProyectos() {
+//		return elemProyectos;
+//	}
+//
+//	public void setElemProyectos(ArrayList<String> elemProyectos) {
+//		this.elemProyectos = elemProyectos;
+//	}
+//
+//	public ArrayList<String> getElemPublicacionesN() {
+//		return elemPublicacionesN;
+//	}
+//
+//	public void setElemPublicacionesN(ArrayList<String> elemPublicacionesN) {
+//		this.elemPublicacionesN = elemPublicacionesN;
+//	}
+//
+//	public List<Investigador> getInvestigadores() {
+//		return investigadores;
+//	}
+//
+//	public void setInvestigadores(List<Investigador> investigadores) {
+//		this.investigadores = investigadores;
+//	}
+//
+//	public ArrayList<String> getUrlSet() {
+//		return urlSet;
+//	}
+//
+//	public void setUrlSet(ArrayList<String> urlSet) {
+//		this.urlSet = urlSet;
+//	}
 
 }

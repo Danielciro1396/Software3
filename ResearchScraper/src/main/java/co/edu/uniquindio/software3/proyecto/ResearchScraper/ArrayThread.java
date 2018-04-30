@@ -30,7 +30,7 @@ public class ArrayThread implements Runnable {
 		if (bandera == 0) {
 			cvLac.extraer(url);
 
-			System.out.println(inicio + " " + url);
+			//System.out.println(inicio + " " + url);
 		} else if (bandera == 1) {
 //			grupLac.extraer(url);
 //
