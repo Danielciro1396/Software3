@@ -32,18 +32,17 @@ public class CvLac {
 	// Lista en la que se guardan las direcciones url de cada investigador
 	public ArrayList<String> urlSet;
 
-	
 	// Lista sincronizada en la que se guardan todos los investidagores junto a
 	// su respectiva informacion
 	public List<Investigador> investigadores = Collections.synchronizedList(new ArrayList<Investigador>());
 
 	/**
-	 * Este metodo se encarga de hacer el llamado al metodo que lee un archivo plano
-	 * y carga el dataSet de url's, ademas, crea y lanza un pool de hilos para
-	 * mejorar el tiempo de ejecucion del programa
+	 * Este metodo se encarga de hacer el llamado al metodo que lee un archivo
+	 * plano y carga el dataSet de url's, ademas, crea y lanza un pool de hilos
+	 * para mejorar el tiempo de ejecucion del programa
 	 */
 	public void scrapData() {
-		
+
 		long startTime = System.currentTimeMillis();
 		long stopTime = 0;
 		long elapsedTime = 0;
@@ -53,7 +52,6 @@ public class CvLac {
 		for (int i = 0; i < urlSet.size(); i++) {
 			Runnable worker = new ArrayThread(urlSet.get(i), i, 0, this, null);
 			executor.execute(worker);
-			//extraer(urlSet.get(i));
 		}
 		executor.shutdown();
 		while (!executor.isTerminated()) {
@@ -61,17 +59,16 @@ public class CvLac {
 			elapsedTime = stopTime - startTime;
 
 		}
-		//llenarBD();
 		System.err.println(elapsedTime);
 		System.out.println(investigadores.size());
 
 	}
 
 	/**
-	 * Método provisto por JSoup para comprobar el Status code de la respuesta que
-	 * recibo al hacer la petición Codigos: 200 OK 300 Multiple Choices 301 Moved
-	 * Permanently 305 Use Proxy 400 Bad Request 403 Forbidden 404 Not Found 500
-	 * Internal Server Error 502 Bad Gateway 503 Service Unavailable
+	 * Método provisto por JSoup para comprobar el Status code de la respuesta
+	 * que recibo al hacer la petición Codigos: 200 OK 300 Multiple Choices 301
+	 * Moved Permanently 305 Use Proxy 400 Bad Request 403 Forbidden 404 Not
+	 * Found 500 Internal Server Error 502 Bad Gateway 503 Service Unavailable
 	 * 
 	 * @param url,
 	 *            el enlace de la página web a analizar.
@@ -90,8 +87,8 @@ public class CvLac {
 	}
 
 	/**
-	 * Método que retorna un objeto de la clase Document con el contenido del HTML
-	 * de la web para poder ser parseado posteriormente con JSoup
+	 * Método que retorna un objeto de la clase Document con el contenido del
+	 * HTML de la web para poder ser parseado posteriormente con JSoup
 	 * 
 	 * @param url,
 	 *            el enlace de la página web a analizar.
@@ -109,9 +106,9 @@ public class CvLac {
 	}
 
 	/**
-	 * Metodo que realiza la extraccion de la estructura de una pagina web, separa
-	 * en las diferentas categorias la estructura de la pagina web y hacer el
-	 * llamado al metodo que asigna los datos a cada investigador
+	 * Metodo que realiza la extraccion de la estructura de una pagina web,
+	 * separa en las diferentas categorias la estructura de la pagina web y
+	 * hacer el llamado al metodo que asigna los datos a cada investigador
 	 * 
 	 * @param url,
 	 *            direccion url de un investigador
@@ -119,13 +116,16 @@ public class CvLac {
 	public void extraer(String url) {
 
 		if (getStatusConnectionCode(url) == 200) {
-			// Lista en la que se guarda la informacion personal de cada invsestigador
+			// Lista en la que se guarda la informacion personal de cada
+			// invsestigador
 			ArrayList<String> elemInfoPersonal = new ArrayList<>();
 
-			// Lista en la que se guardan la formacion academica de cada invsestigador
+			// Lista en la que se guardan la formacion academica de cada
+			// invsestigador
 			ArrayList<String> elemFormacionAcam = new ArrayList<>();
 
-			// Lista en la que se guardan los eventos en los que ha participado de cada
+			// Lista en la que se guardan los eventos en los que ha participado
+			// de cada
 			// invsestigador
 			ArrayList<String> elemEventos = new ArrayList<>();
 
@@ -135,13 +135,15 @@ public class CvLac {
 
 			// Lista en la que se guardan los libros que ha escrito de cada
 			// invsestigador
-			 ArrayList<String> elemLibros = new ArrayList<>();
+			ArrayList<String> elemLibros = new ArrayList<>();
 
-			// Lista en la que se guardan los informes de investigación que ha escrito
+			// Lista en la que se guardan los informes de investigación que ha
+			// escrito
 			// de cada invsestigador
 			ArrayList<String> elemInformes = new ArrayList<>();
 
-			// Lista en la que se guardan los proyectos en los que ha participado de
+			// Lista en la que se guardan los proyectos en los que ha
+			// participado de
 			// cada invsestigador
 			ArrayList<String> elemProyectos = new ArrayList<>();
 
@@ -149,7 +151,6 @@ public class CvLac {
 			// especializadas que ha realizado de cada invsestigador
 			ArrayList<String> elemPublicacionesN = new ArrayList<>();
 
-			
 			// Obtengo el HTML de la web en un objeto Document
 			Document document = getHtmlDocument(url);
 			// Busca todas las coincidencias que estan dentro de
@@ -159,7 +160,7 @@ public class CvLac {
 
 				if (elem.text().contains("Nombre en citaciones")) {
 					elemInfoPersonal.add(elem.toString());
-				}				
+				}
 				if (elem.text().contains("Formación Académica")) {
 					elemFormacionAcam.add(elem.toString());
 				}
@@ -221,105 +222,97 @@ public class CvLac {
 			ArrayList<String> articulos, ArrayList<String> libros, ArrayList<String> informes,
 			ArrayList<String> proyectos, ArrayList<String> publicacionesN) {
 		Investigador investigador = new Investigador();
-		if(datosPersonales.size()==0){
+		if (datosPersonales.size() == 0) {
 			investigador.setNombre("PERFIL PRIVADO");
+			investigador.setCategoria("N/D");
+			investigador.setFormacion("N/D");
 			investigadores.add(investigador);
 			System.err.println(investigador.getNombre());
-			String aux = Constantes.INSERT_INVES + "('" + investigador.getNombre().toUpperCase()+"')";
+			String aux = Constantes.INSERT_INVES + "('" + investigador.getNombre().toUpperCase() + "', '"
+					+ investigador.getCategoria().toUpperCase() + "' , '" + investigador.getFormacion().toUpperCase()
+					+ "')";
 			BdAccess bdA = new BdAccess();
 			bdA.conexion(aux);
-		}else{
-		try {
-	
-			for (int i = 0; i < datosPersonales.size(); i++) {
-				if (datosPersonales.get(i).contains("CATEGORÍA")) {
-					investigador.setCategoria(datosPersonales.get(i + 1));
+		} else {
+			try {
+				for (int i = 0; i < datosPersonales.size(); i++) {
+					if (datosPersonales.get(i).contains("CATEGORÍA")) {
+						String registro = datosPersonales.get(i+1);
+						char [] aux = registro.toCharArray();
+						String categoria = "";
+						for (int j = 0; j < aux.length; j++) {
+							if(aux[j]=='('){
+								categoria = registro.substring(0, j-1);
+								investigador.setCategoria(categoria);
+								break;
+							}
+						}
+					//	investigador.setCategoria(datosPersonales.get(i + 1));
+					}
+					if (datosPersonales.get(i).equalsIgnoreCase("NOMBRE")) {
+						investigador.setNombre(datosPersonales.get(i + 1));
+					}
 				}
-				if (datosPersonales.get(i).equalsIgnoreCase("NOMBRE")) {
-					investigador.setNombre(datosPersonales.get(i + 1));
+				
+				if(investigador.getCategoria()==null){
+					investigador.setCategoria("N/D");
 				}
+			} catch (NullPointerException e) {
+
 			}
-		} catch (NullPointerException e) {
 
+			try {
+				extraerFormacionAcademica(formacion, investigador);
+				if(investigador.getFormacion()==null){
+					investigador.setFormacion("N/D");
+				}
+			} catch (Exception e) {
+
+			}
+
+			try {
+				extraerEventos(eventos, investigador);
+			} catch (Exception e) {
+
+			}
+			try {
+				extraerArticulos(articulos, investigador);
+			} catch (Exception e) {
+
+			}
+			try {
+				extraerLibros(libros, investigador);
+			} catch (Exception e) {
+
+			}
+			try {
+				extraerProyectos(proyectos, investigador);
+			} catch (Exception e) {
+
+			}
+
+			try {
+				investigadores.add(investigador);
+				System.out.println(investigador.getNombre());
+				String aux = Constantes.INSERT_INVES + "('" + investigador.getNombre().toUpperCase() + "', '"
+						+ investigador.getCategoria().toUpperCase() + "' , '" + investigador.getFormacion().toUpperCase()
+						+ "')";
+				BdAccess bdA = new BdAccess();
+				bdA.conexion(aux);
+
+			} catch (Exception e) {
+
+			}
 		}
 
-		try {
-			extraerFormacionAcademica(formacion, investigador);
-		} catch (Exception e) {
-
-		}
-
-		try {
-			extraerEventos(eventos, investigador);
-		} catch (Exception e) {
-
-		}
-		try {
-			extraerArticulos(articulos, investigador);
-		} catch (Exception e) {
-
-		}
-		try {
-			extraerLibros(libros, investigador);
-		} catch (Exception e) {
-
-		}
-		try {
-			extraerProyectos(proyectos, investigador);
-		} catch (Exception e) {
-
-		}
-		
-		try {
-			// boolean estaRepetido = false;
-			// for (int i = 0; i < investigadores.size(); i++) {
-			// if
-			// (investigadores.get(i).getNombre().equalsIgnoreCase(investigador.getNombre()))
-			// {
-			// estaRepetido = true;
-			// }
-			// }
-			// if (estaRepetido) {
-			// Investigador investigador2 = new Investigador();
-			//
-			// ArrayList<EventoCientifico> eventos1 = new ArrayList<>();
-			// ArrayList<Articulo> articulos1 = new ArrayList<>();
-			// ArrayList<Libro> libros1 = new ArrayList<>();
-			// ArrayList<Proyecto> proyectos1 = new ArrayList<>();
-			//
-			// investigador2.setArticulos(articulos1);
-			// investigador2.setEventos(eventos1);
-			// investigador2.setProyectos(proyectos1);
-			// investigador2.setLibros(libros1);
-			// investigador2.setNombre("Perfil Privado");
-			// investigador2.setCategoria("No disponible");
-			// investigador2.setFormacion("No disponible");
-			// investigadores.add(investigador2);
-			// System.out.println(investigador2.getNombre());
-			// } else {
-			
-			// System.out.println(investigador.getNombre());
-			// }
-
-			investigadores.add(investigador);
-			System.out.println(investigador.getNombre());
-			String aux = Constantes.INSERT_INVES + "('" + investigador.getNombre().toUpperCase()+"')";
-			BdAccess bdA = new BdAccess();
-			bdA.conexion(aux);
-			
-		} catch (Exception e) {
-
-		}
-		}
-		
 	}
 
 	/**
 	 * Metodo que extrae y asigna la formacion academica de cada investigador
 	 * 
 	 * @param elementos,
-	 *            Lista donde esta toda la informacion de la formacion academica del
-	 *            investigador
+	 *            Lista donde esta toda la informacion de la formacion academica
+	 *            del investigador
 	 * @param investigador,
 	 *            investigador al que se le a asignar la informacion
 	 */
@@ -332,13 +325,13 @@ public class CvLac {
 	}
 
 	/**
-	 * Este metodo filtra la informacion y la segmenta en su respectiva categoria
-	 * para poder agregarla ordenadamente a las listas de cada uno de los
-	 * investigadores
+	 * Este metodo filtra la informacion y la segmenta en su respectiva
+	 * categoria para poder agregarla ordenadamente a las listas de cada uno de
+	 * los investigadores
 	 * 
 	 * @param elementos,
-	 *            Lista donde estan todos los eventos en los que ha participado el
-	 *            investigador
+	 *            Lista donde estan todos los eventos en los que ha participado
+	 *            el investigador
 	 * @param investigador,
 	 *            investigador al que se le a asignar la informacion
 	 */
@@ -412,13 +405,13 @@ public class CvLac {
 	}
 
 	/**
-	 * Este metodo filtra la informacion y la segmenta en su respectiva categoria
-	 * para poder agregarla ordenadamente a las listas de cada uno de los
-	 * investigadores
+	 * Este metodo filtra la informacion y la segmenta en su respectiva
+	 * categoria para poder agregarla ordenadamente a las listas de cada uno de
+	 * los investigadores
 	 * 
 	 * @param elementos,
-	 *            Lista donde estan todos los articulos en los que ha participado el
-	 *            investigador
+	 *            Lista donde estan todos los articulos en los que ha
+	 *            participado el investigador
 	 * @param investigador,
 	 *            investigador al que se le a asignar la informacion
 	 */
@@ -510,13 +503,13 @@ public class CvLac {
 	}
 
 	/**
-	 * Este metodo filtra la informacion y la segmenta en su respectiva categoria
-	 * para poder agregarla ordenadamente a las listas de cada uno de los
-	 * investigadores
+	 * Este metodo filtra la informacion y la segmenta en su respectiva
+	 * categoria para poder agregarla ordenadamente a las listas de cada uno de
+	 * los investigadores
 	 * 
 	 * @param elementos,
-	 *            Lista donde estan todos los libros en los que ha participado el
-	 *            investigador
+	 *            Lista donde estan todos los libros en los que ha participado
+	 *            el investigador
 	 * @param investigador,
 	 *            investigador al que se le a asignar la informacion
 	 */
@@ -613,13 +606,13 @@ public class CvLac {
 	}
 
 	/**
-	 * Este metodo filtra la informacion y la segmenta en su respectiva categoria
-	 * para poder agregarla ordenadamente a las listas de cada uno de los
-	 * investigadores
+	 * Este metodo filtra la informacion y la segmenta en su respectiva
+	 * categoria para poder agregarla ordenadamente a las listas de cada uno de
+	 * los investigadores
 	 * 
 	 * @param elementos,
-	 *            Lista donde estan todos los proyectos en los que ha participado el
-	 *            investigador
+	 *            Lista donde estan todos los proyectos en los que ha
+	 *            participado el investigador
 	 * @param investigador,
 	 *            investigador al que se le a asignar la informacion
 	 */
@@ -753,91 +746,92 @@ public class CvLac {
 		String aux;
 		System.out.println(investigadores.size());
 		for (int i = 0; i < investigadores.size(); i++) {
-			aux = Constantes.INSERT_INVES + "('" + investigadores.get(i).getNombre().toUpperCase()+"')";
-			// System.out.println(i+1+ investigadores.get(i).getNombre().toUpperCase());
+			aux = Constantes.INSERT_INVES + "('" + investigadores.get(i).getNombre().toUpperCase() + "')";
+			// System.out.println(i+1+
+			// investigadores.get(i).getNombre().toUpperCase());
 			bdA.conexion(aux);
-			
+
 		}
 	}
 
-//	public ArrayList<String> getElemInfoPersonal() {
-//		return elemInfoPersonal;
-//	}
-//
-//	public void setElemInfoPersonal(ArrayList<String> elemInfoPersonal) {
-//		this.elemInfoPersonal = elemInfoPersonal;
-//	}
-//
-//	public ArrayList<String> getElemFormacionAcam() {
-//		return elemFormacionAcam;
-//	}
-//
-//	public void setElemFormacionAcam(ArrayList<String> elemFormacionAcam) {
-//		this.elemFormacionAcam = elemFormacionAcam;
-//	}
-//
-//	public ArrayList<String> getElemEventos() {
-//		return elemEventos;
-//	}
-//
-//	public void setElemEventos(ArrayList<String> elemEventos) {
-//		this.elemEventos = elemEventos;
-//	}
-//
-//	public ArrayList<String> getElemArticulos() {
-//		return elemArticulos;
-//	}
-//
-//	public void setElemArticulos(ArrayList<String> elemArticulos) {
-//		this.elemArticulos = elemArticulos;
-//	}
-//
-//	public ArrayList<String> getElemLibros() {
-//		return elemLibros;
-//	}
-//
-//	public void setElemLibros(ArrayList<String> elemLibros) {
-//		this.elemLibros = elemLibros;
-//	}
-//
-//	public ArrayList<String> getElemInformes() {
-//		return elemInformes;
-//	}
-//
-//	public void setElemInformes(ArrayList<String> elemInformes) {
-//		this.elemInformes = elemInformes;
-//	}
-//
-//	public ArrayList<String> getElemProyectos() {
-//		return elemProyectos;
-//	}
-//
-//	public void setElemProyectos(ArrayList<String> elemProyectos) {
-//		this.elemProyectos = elemProyectos;
-//	}
-//
-//	public ArrayList<String> getElemPublicacionesN() {
-//		return elemPublicacionesN;
-//	}
-//
-//	public void setElemPublicacionesN(ArrayList<String> elemPublicacionesN) {
-//		this.elemPublicacionesN = elemPublicacionesN;
-//	}
-//
-//	public List<Investigador> getInvestigadores() {
-//		return investigadores;
-//	}
-//
-//	public void setInvestigadores(List<Investigador> investigadores) {
-//		this.investigadores = investigadores;
-//	}
-//
-//	public ArrayList<String> getUrlSet() {
-//		return urlSet;
-//	}
-//
-//	public void setUrlSet(ArrayList<String> urlSet) {
-//		this.urlSet = urlSet;
-//	}
+	// public ArrayList<String> getElemInfoPersonal() {
+	// return elemInfoPersonal;
+	// }
+	//
+	// public void setElemInfoPersonal(ArrayList<String> elemInfoPersonal) {
+	// this.elemInfoPersonal = elemInfoPersonal;
+	// }
+	//
+	// public ArrayList<String> getElemFormacionAcam() {
+	// return elemFormacionAcam;
+	// }
+	//
+	// public void setElemFormacionAcam(ArrayList<String> elemFormacionAcam) {
+	// this.elemFormacionAcam = elemFormacionAcam;
+	// }
+	//
+	// public ArrayList<String> getElemEventos() {
+	// return elemEventos;
+	// }
+	//
+	// public void setElemEventos(ArrayList<String> elemEventos) {
+	// this.elemEventos = elemEventos;
+	// }
+	//
+	// public ArrayList<String> getElemArticulos() {
+	// return elemArticulos;
+	// }
+	//
+	// public void setElemArticulos(ArrayList<String> elemArticulos) {
+	// this.elemArticulos = elemArticulos;
+	// }
+	//
+	// public ArrayList<String> getElemLibros() {
+	// return elemLibros;
+	// }
+	//
+	// public void setElemLibros(ArrayList<String> elemLibros) {
+	// this.elemLibros = elemLibros;
+	// }
+	//
+	// public ArrayList<String> getElemInformes() {
+	// return elemInformes;
+	// }
+	//
+	// public void setElemInformes(ArrayList<String> elemInformes) {
+	// this.elemInformes = elemInformes;
+	// }
+	//
+	// public ArrayList<String> getElemProyectos() {
+	// return elemProyectos;
+	// }
+	//
+	// public void setElemProyectos(ArrayList<String> elemProyectos) {
+	// this.elemProyectos = elemProyectos;
+	// }
+	//
+	// public ArrayList<String> getElemPublicacionesN() {
+	// return elemPublicacionesN;
+	// }
+	//
+	// public void setElemPublicacionesN(ArrayList<String> elemPublicacionesN) {
+	// this.elemPublicacionesN = elemPublicacionesN;
+	// }
+	//
+	// public List<Investigador> getInvestigadores() {
+	// return investigadores;
+	// }
+	//
+	// public void setInvestigadores(List<Investigador> investigadores) {
+	// this.investigadores = investigadores;
+	// }
+	//
+	// public ArrayList<String> getUrlSet() {
+	// return urlSet;
+	// }
+	//
+	// public void setUrlSet(ArrayList<String> urlSet) {
+	// this.urlSet = urlSet;
+	// }
 
 }
