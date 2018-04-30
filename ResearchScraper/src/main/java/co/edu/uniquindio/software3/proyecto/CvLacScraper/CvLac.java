@@ -17,6 +17,8 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import co.edu.uniquindio.software3.proyecto.ResearchScraper.ArrayThread;
+import co.edu.uniquindio.software3.proyecto.ResearchScraper.BdAccess;
+import co.edu.uniquindio.software3.proyecto.ResearchScraper.Constantes;
 
 public class CvLac {
 
@@ -64,9 +66,9 @@ public class CvLac {
 	public List<Investigador> investigadores = Collections.synchronizedList(new ArrayList<Investigador>());
 
 	/**
-	 * Este metodo se encarga de hacer el llamado al metodo que lee un archivo
-	 * plano y carga el dataSet de url's, ademas, crea y lanza un pool de hilos
-	 * para mejorar el tiempo de ejecucion del programa
+	 * Este metodo se encarga de hacer el llamado al metodo que lee un archivo plano
+	 * y carga el dataSet de url's, ademas, crea y lanza un pool de hilos para
+	 * mejorar el tiempo de ejecucion del programa
 	 */
 	public void scrapData() {
 		long startTime = System.currentTimeMillis();
@@ -84,15 +86,16 @@ public class CvLac {
 			elapsedTime = stopTime - startTime;
 
 		}
+		// llenarBD();
 		System.err.println(elapsedTime);
 
 	}
 
 	/**
-	 * Método provisto por JSoup para comprobar el Status code de la respuesta
-	 * que recibo al hacer la petición Codigos: 200 OK 300 Multiple Choices 301
-	 * Moved Permanently 305 Use Proxy 400 Bad Request 403 Forbidden 404 Not
-	 * Found 500 Internal Server Error 502 Bad Gateway 503 Service Unavailable
+	 * Método provisto por JSoup para comprobar el Status code de la respuesta que
+	 * recibo al hacer la petición Codigos: 200 OK 300 Multiple Choices 301 Moved
+	 * Permanently 305 Use Proxy 400 Bad Request 403 Forbidden 404 Not Found 500
+	 * Internal Server Error 502 Bad Gateway 503 Service Unavailable
 	 * 
 	 * @param url,
 	 *            el enlace de la página web a analizar.
@@ -111,8 +114,8 @@ public class CvLac {
 	}
 
 	/**
-	 * Método que retorna un objeto de la clase Document con el contenido del
-	 * HTML de la web para poder ser parseado posteriormente con JSoup
+	 * Método que retorna un objeto de la clase Document con el contenido del HTML
+	 * de la web para poder ser parseado posteriormente con JSoup
 	 * 
 	 * @param url,
 	 *            el enlace de la página web a analizar.
@@ -128,11 +131,11 @@ public class CvLac {
 		}
 		return doc;
 	}
-	
+
 	/**
-	 * Metodo que realiza la extraccion de la estructura de una pagina web,
-	 * separa en las diferentas categorias la estructura de la pagina web y
-	 * hacer el llamado al metodo que asigna los datos a cada investigador
+	 * Metodo que realiza la extraccion de la estructura de una pagina web, separa
+	 * en las diferentas categorias la estructura de la pagina web y hacer el
+	 * llamado al metodo que asigna los datos a cada investigador
 	 * 
 	 * @param url,
 	 *            direccion url de un investigador
@@ -184,8 +187,6 @@ public class CvLac {
 
 	}
 
-	
-
 	/**
 	 * Este metodo asigna cada uno de los elementos encontrados al investigador
 	 * respectivo y lo añade a la lista de investigadores
@@ -215,11 +216,11 @@ public class CvLac {
 		Investigador investigador = new Investigador();
 		try {
 			for (int i = 0; i < datosPersonales.size(); i++) {
-				if (datosPersonales.get(i).contains("Categoría")) {
-					investigador.setCategoria(datosPersonales.get(i + 2));
+				if (datosPersonales.get(i).contains("CATEGORÍA")) {
+					investigador.setCategoria(datosPersonales.get(i + 1));
 				}
-				if (datosPersonales.get(i).equals("Nombre")) {
-					investigador.setNombre(datosPersonales.get(i + 2));
+				if (datosPersonales.get(i).equalsIgnoreCase("NOMBRE")) {
+					investigador.setNombre(datosPersonales.get(i + 1));
 				}
 			}
 		} catch (NullPointerException e) {
@@ -254,31 +255,35 @@ public class CvLac {
 		}
 
 		try {
-			boolean estaRepetido = false;
-			for (int i = 0; i < investigadores.size(); i++) {
-				if (investigadores.get(i).getNombre().equals(investigador.getNombre())) {
-					estaRepetido = true;
-				}
-			}
-			if (estaRepetido) {
-				Investigador investigador2 = new Investigador();
-
-				ArrayList<EventoCientifico> eventos1 = new ArrayList<>();
-				ArrayList<Articulo> articulos1 = new ArrayList<>();
-				ArrayList<Libro> libros1 = new ArrayList<>();
-				ArrayList<Proyecto> proyectos1 = new ArrayList<>();
-
-				investigador2.setArticulos(articulos1);
-				investigador2.setEventos(eventos1);
-				investigador2.setProyectos(proyectos1);
-				investigador2.setLibros(libros1);
-				investigador2.setNombre("Perfil Privado");
-				investigador2.setCategoria("No disponible");
-				investigador2.setFormacion("No disponible");
-				investigadores.add(investigador2);
-			} else {
-				investigadores.add(investigador);
-			}
+			// boolean estaRepetido = false;
+			// for (int i = 0; i < investigadores.size(); i++) {
+			// if
+			// (investigadores.get(i).getNombre().equalsIgnoreCase(investigador.getNombre()))
+			// {
+			// estaRepetido = true;
+			// }
+			// }
+			// if (estaRepetido) {
+			// Investigador investigador2 = new Investigador();
+			//
+			// ArrayList<EventoCientifico> eventos1 = new ArrayList<>();
+			// ArrayList<Articulo> articulos1 = new ArrayList<>();
+			// ArrayList<Libro> libros1 = new ArrayList<>();
+			// ArrayList<Proyecto> proyectos1 = new ArrayList<>();
+			//
+			// investigador2.setArticulos(articulos1);
+			// investigador2.setEventos(eventos1);
+			// investigador2.setProyectos(proyectos1);
+			// investigador2.setLibros(libros1);
+			// investigador2.setNombre("Perfil Privado");
+			// investigador2.setCategoria("No disponible");
+			// investigador2.setFormacion("No disponible");
+			// investigadores.add(investigador2);
+			// System.out.println(investigador2.getNombre());
+			// } else {
+			investigadores.add(investigador);
+			// System.out.println(investigador.getNombre());
+			// }
 
 		} catch (Exception e) {
 
@@ -290,27 +295,27 @@ public class CvLac {
 	 * Metodo que extrae y asigna la formacion academica de cada investigador
 	 * 
 	 * @param elementos,
-	 *            Lista donde esta toda la informacion de la formacion academica
-	 *            del investigador
+	 *            Lista donde esta toda la informacion de la formacion academica del
+	 *            investigador
 	 * @param investigador,
 	 *            investigador al que se le a asignar la informacion
 	 */
 	public void extraerFormacionAcademica(ArrayList<String> elementos, Investigador investigador) {
 		for (int i = 0; i < elementos.size(); i++) {
-			if (elementos.get(i).equals("Formación Académica")) {
-				investigador.setFormacion(elementos.get(i + 6));
+			if (elementos.get(i).equalsIgnoreCase("Formación Académica")) {
+				investigador.setFormacion(elementos.get(i + 1));
 			}
 		}
 	}
 
 	/**
-	 * Este metodo filtra la informacion y la segmenta en su respectiva
-	 * categoria para poder agregarla ordenadamente a las listas de cada uno de
-	 * los investigadores
+	 * Este metodo filtra la informacion y la segmenta en su respectiva categoria
+	 * para poder agregarla ordenadamente a las listas de cada uno de los
+	 * investigadores
 	 * 
 	 * @param elementos,
-	 *            Lista donde estan todos los eventos en los que ha participado
-	 *            el investigador
+	 *            Lista donde estan todos los eventos en los que ha participado el
+	 *            investigador
 	 * @param investigador,
 	 *            investigador al que se le a asignar la informacion
 	 */
@@ -324,32 +329,30 @@ public class CvLac {
 		String aux = "";
 		String aux2 = "";
 		aux = StringUtils.stripAccents(investigador.getNombre());
-		aux = aux.replace("  ", " ");
-		aux = aux.substring(1);
 		ArrayList<EventoCientifico> eventoAux = new ArrayList<>();
 		for (int i = 0; i < elementos.size(); i++) {
 			EventoCientifico eventos = new EventoCientifico();
-			if (elementos.get(i).contains("Nombre del evento:")) {
+			if (elementos.get(i).contains("NOMBRE DEL EVENTO:")) {
 				nombre = elementos.get(i + 1);
 			}
-			if (elementos.get(i).contains("Tipo de evento:")) {
+			if (elementos.get(i).contains("TIPO DE EVENTO:")) {
 				tipo = elementos.get(i + 1);
 			}
-			if (elementos.get(i).contains("Ámbito:")) {
+			if (elementos.get(i).contains("ÁMBITO:")) {
 				ambito = elementos.get(i + 1);
 			}
-			if (elementos.get(i).contains("Realizado el:")) {
+			if (elementos.get(i).contains("REALIZADO EL:")) {
 				String cadena = elementos.get(i);
 				fecha = cadena.substring(13, 17);
 				if (fecha.contains(",")) {
-					fecha = "No registra";
+					fecha = "NO REGISTRA";
 				}
 
 				char[] auxiliar = cadena.toCharArray();
 				int posI = 0;
 				int posF = 0;
 				for (int j = 0; j < auxiliar.length; j++) {
-					if (auxiliar[j] == 'e' && auxiliar[j + 1] == 'n' && auxiliar[j + 2] == ' ') {
+					if (auxiliar[j] == 'E' && auxiliar[j + 1] == 'N' && auxiliar[j + 2] == ' ') {
 						posI = j + 3;
 						for (int k = posI; k < auxiliar.length; k++) {
 							if (auxiliar[k] == '-') {
@@ -363,7 +366,7 @@ public class CvLac {
 				}
 			}
 			aux2 = StringUtils.stripAccents(elementos.get(i));
-			if (aux2.equalsIgnoreCase(aux) && elementos.get(i + 1).contains("Rol en el evento:")) {
+			if (aux2.equalsIgnoreCase(aux) && elementos.get(i + 1).contains("ROL EN EL EVENTO:")) {
 				rol = elementos.get(i + 2);
 				eventos.setNombre(nombre);
 				eventos.setTipo(tipo);
@@ -386,13 +389,13 @@ public class CvLac {
 	}
 
 	/**
-	 * Este metodo filtra la informacion y la segmenta en su respectiva
-	 * categoria para poder agregarla ordenadamente a las listas de cada uno de
-	 * los investigadores
+	 * Este metodo filtra la informacion y la segmenta en su respectiva categoria
+	 * para poder agregarla ordenadamente a las listas de cada uno de los
+	 * investigadores
 	 * 
 	 * @param elementos,
-	 *            Lista donde estan todos los articulos en los que ha
-	 *            participado el investigador
+	 *            Lista donde estan todos los articulos en los que ha participado el
+	 *            investigador
 	 * @param investigador,
 	 *            investigador al que se le a asignar la informacion
 	 */
@@ -406,12 +409,10 @@ public class CvLac {
 		String aux = "";
 		String aux2 = "";
 		aux = StringUtils.stripAccents(investigador.getNombre());
-		aux = aux.replace("  ", " ");
-		aux = aux.substring(1, aux.length() - 1);
 		ArrayList<Articulo> articuloAux = new ArrayList<>();
 		for (int i = 0; i < elementos.size(); i++) {
 			Articulo articulo = new Articulo();
-			if (elementos.get(i).contains("Publicado en revista especializada")) {
+			if (elementos.get(i).contains("PUBLICADO EN REVISTA ESPECIALIZADA")) {
 				esEspecializada = true;
 			}
 			aux2 = StringUtils.stripAccents(elementos.get(i));
@@ -434,7 +435,7 @@ public class CvLac {
 							}
 						} else if (auxiliar[j] == ':') {
 							posI = j + 1;
-							lugar = cadena.substring(posI);
+							lugar = cadena.substring(posI + 1);
 						} else {
 							posI = j;
 							for (int k = posI; k < auxiliar.length; k++) {
@@ -451,10 +452,10 @@ public class CvLac {
 				}
 				nomRevista = elementos.get(i + 1);
 			}
-			if (elementos.get(i).contains("ed:")) {
+			if (elementos.get(i).contains("ED:")) {
 				nomRevista += " Editorial: " + elementos.get(i + 1);
 			}
-			if (elementos.get(i).contains("fasc.")) {
+			if (elementos.get(i).contains("FASC.")) {
 				String cadena = elementos.get(i + 1);
 				char[] auxiliar = cadena.toCharArray();
 				int posI = 0;
@@ -486,13 +487,13 @@ public class CvLac {
 	}
 
 	/**
-	 * Este metodo filtra la informacion y la segmenta en su respectiva
-	 * categoria para poder agregarla ordenadamente a las listas de cada uno de
-	 * los investigadores
+	 * Este metodo filtra la informacion y la segmenta en su respectiva categoria
+	 * para poder agregarla ordenadamente a las listas de cada uno de los
+	 * investigadores
 	 * 
 	 * @param elementos,
-	 *            Lista donde estan todos los libros en los que ha participado
-	 *            el investigador
+	 *            Lista donde estan todos los libros en los que ha participado el
+	 *            investigador
 	 * @param investigador,
 	 *            investigador al que se le a asignar la informacion
 	 */
@@ -505,8 +506,6 @@ public class CvLac {
 		String aux = "";
 		String aux2 = "";
 		aux = StringUtils.stripAccents(investigador.getNombre());
-		aux = aux.replace("  ", " ");
-		aux = aux.substring(1, aux.length() - 1);
 		ArrayList<Libro> libroAux = new ArrayList<>();
 		for (int i = 0; i < elementos.size(); i++) {
 			Libro libro = new Libro();
@@ -514,9 +513,10 @@ public class CvLac {
 			if (aux2.toUpperCase().contains(aux.toUpperCase())) {
 				String cadena = elementos.get(i);
 				char[] auxiliar = cadena.toCharArray();
-				int posI = 0;
-				int posF = 0;
 				for (int j = 0; j < auxiliar.length; j++) {
+					int posI = 0;
+					int posF = 0;
+
 					if (auxiliar[j] != ' ') {
 						if (auxiliar[j] == '"') {
 							posI = j + 1;
@@ -524,29 +524,40 @@ public class CvLac {
 								if (auxiliar[k] == '"') {
 									posF = k;
 									titulo = cadena.substring(posI, posF);
-									j = k;
+									j = k + 1;
 									break;
 								}
 							}
-						} else if (auxiliar[j] == 'e' && auxiliar[j + 1] == 'n' && auxiliar[j + 2] == ':') {
-							posI = j + 3;
+						} else if (auxiliar[j] == 'E' && auxiliar[j + 1] == 'N' && auxiliar[j + 2] == ':') {
+							posI = j + 4;
 							for (int l = posI; l < auxiliar.length; l++) {
 								if (auxiliar[l] == '1' || auxiliar[l] == '2') {
 									posF = l - 1;
 									lugar = cadena.substring(posI, posF);
-									j = l;
+									j = l - 1;
+									break;
 								}
 
 							}
 
-						} else if (auxiliar[j] == '1' || auxiliar[j] == '2') {
+						} else if ((auxiliar[j] == '1' || auxiliar[j] == '2')) {
+
 							posI = j;
-							posF = j + 4;
-							anio = cadena.substring(posI, posF);
-						} else if (auxiliar[j] == 'e' && auxiliar[j + 1] == 'd' && auxiliar[j + 2] == ':') {
+
+							for (int m = posI; m < auxiliar.length; m++) {
+								if (auxiliar[m] == 'E' && auxiliar[m + 1] == 'D' && auxiliar[m + 2] == ':') {
+									posF = m - 3;
+									anio = cadena.substring(posI, posF);
+									j = m - 1;
+									break;
+								}
+							}
+
+						} else if (auxiliar[j] == 'E' && auxiliar[j + 1] == 'D' && auxiliar[j + 2] == ':') {
 							posI = j + 3;
 							posF = cadena.length();
 							editorial = cadena.substring(posI, posF);
+							j = posF;
 						}
 
 						else {
@@ -579,13 +590,13 @@ public class CvLac {
 	}
 
 	/**
-	 * Este metodo filtra la informacion y la segmenta en su respectiva
-	 * categoria para poder agregarla ordenadamente a las listas de cada uno de
-	 * los investigadores
+	 * Este metodo filtra la informacion y la segmenta en su respectiva categoria
+	 * para poder agregarla ordenadamente a las listas de cada uno de los
+	 * investigadores
 	 * 
 	 * @param elementos,
-	 *            Lista donde estan todos los proyectos en los que ha
-	 *            participado el investigador
+	 *            Lista donde estan todos los proyectos en los que ha participado el
+	 *            investigador
 	 * @param investigador,
 	 *            investigador al que se le a asignar la informacion
 	 */
@@ -598,11 +609,11 @@ public class CvLac {
 		ArrayList<Proyecto> proyectoAux = new ArrayList<>();
 		for (int i = 0; i < elementos.size(); i++) {
 			Proyecto proyecto = new Proyecto();
-			if (elementos.get(i).contains("Tipo de proyecto:")) {
+			if (elementos.get(i).contains("TIPO DE PROYECTO:")) {
 				tipo = elementos.get(i + 1);
 				nombre = elementos.get(i + 2);
 			}
-			if (elementos.get(i).contains("Inicio:")) {
+			if (elementos.get(i).contains("INICIO:")) {
 				String cadena = elementos.get(i + 1);
 				char[] aux = cadena.toCharArray();
 				for (int j = 0; j < aux.length; j++) {
@@ -632,15 +643,15 @@ public class CvLac {
 	 *         caracteres especiales
 	 */
 	public ArrayList<String> limpiar(ArrayList<String> elementos) {
-		String etiquetas = "";
+		String temporal = "";
 		ArrayList<String> elementosLimpio = new ArrayList<>();
 		ArrayList<String> aux = new ArrayList<>();
 		ArrayList<String> aux2 = new ArrayList<>();
 		for (int i = 0; i < elementos.size(); i++) {
-			etiquetas = elementos.get(i).replaceAll("\n", "");
-			etiquetas = etiquetas.replaceAll("&nbsp;", " ");
+			temporal = elementos.get(i).replaceAll("\n", "");
+			temporal = temporal.replaceAll("&nbsp;", " ");
 		}
-		char[] auxiliar = etiquetas.toCharArray();
+		char[] auxiliar = temporal.toCharArray();
 		int posI = 0;
 		int posF = 0;
 		for (int j = 0; j < auxiliar.length; j++) {
@@ -649,7 +660,7 @@ public class CvLac {
 				for (int i = j; i < auxiliar.length; i++) {
 					if (auxiliar[i] == '<') {
 						posF = i;
-						elementosLimpio.add(etiquetas.substring(posI, posF));
+						elementosLimpio.add(temporal.substring(posI, posF));
 						j = i;
 						break;
 					}
@@ -657,20 +668,33 @@ public class CvLac {
 			}
 		}
 		for (int i = 0; i < elementosLimpio.size(); i++) {
-			String temporal = "";
+			temporal = "";
 			temporal = elementosLimpio.get(i).replaceAll(">", " ");
 			aux.add(temporal);
 
 		}
 		for (int i = 0; i < aux.size(); i++) {
-			if (!aux.get(i).equals(" ")) {
-				String temporal = "";
+			if (!aux.get(i).equalsIgnoreCase(" ")) {
+				temporal = "";
 				temporal = aux.get(i).substring(1);
-				aux2.add(temporal);
+				aux2.add(temporal.trim());
 			}
 
 		}
-		elementosLimpio = aux2;
+		aux.clear();
+
+		for (int i = 0; i < aux2.size(); i++) {
+			temporal = aux2.get(i);
+			if (!temporal.equalsIgnoreCase("")) {
+				aux.add(temporal.trim().toUpperCase());
+			}
+
+		}
+
+		elementosLimpio = aux;
+		// for (int i = 0; i < elementosLimpio.size(); i++) {
+		// System.out.println(elementosLimpio.get(i));
+		// }
 		return elementosLimpio;
 	}
 
@@ -694,6 +718,22 @@ public class CvLac {
 		} catch (IOException ex) {
 			ex.printStackTrace();
 
+		}
+	}
+
+	/**
+	 * 
+	 */
+	public void llenarBD() {
+
+		BdAccess bdA = new BdAccess();
+		String aux;
+		System.out.println(investigadores.size());
+		for (int i = 0; i < investigadores.size(); i++) {
+			aux = Constantes.INSERT_INVES + "(" + (i + 1) + ", '" + investigadores.get(i).getNombre().toUpperCase()
+					+ "')";
+			// System.out.println(i+1+ investigadores.get(i).getNombre().toUpperCase());
+			bdA.conexion(aux);
 		}
 	}
 
