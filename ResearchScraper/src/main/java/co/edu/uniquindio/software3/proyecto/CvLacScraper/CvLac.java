@@ -60,7 +60,6 @@ public class CvLac {
 
 		}
 		System.err.println(elapsedTime);
-		System.out.println(investigadores.size());
 
 	}
 
@@ -226,8 +225,17 @@ public class CvLac {
 			investigador.setNombre("PERFIL PRIVADO");
 			investigador.setCategoria("N/D");
 			investigador.setFormacion("N/D");
+			ArrayList<EventoCientifico> eventos1 = new ArrayList<>();
+			ArrayList<Articulo> articulos1 = new ArrayList<>();
+			ArrayList<Libro> libros1 = new ArrayList<>();
+			ArrayList<Proyecto> proyectos1 = new ArrayList<>();
+
+			investigador.setArticulos(articulos1);
+			investigador.setEventos(eventos1);
+			investigador.setProyectos(proyectos1);
+			investigador.setLibros(libros1);
 			investigadores.add(investigador);
-			System.err.println(investigador.getNombre());
+			System.out.println(investigador.getNombre());
 			String aux = Constantes.INSERT_INVES + "('" + investigador.getNombre().toUpperCase() + "', '"
 					+ investigador.getCategoria().toUpperCase() + "' , '" + investigador.getFormacion().toUpperCase()
 					+ "')";
@@ -237,24 +245,25 @@ public class CvLac {
 			try {
 				for (int i = 0; i < datosPersonales.size(); i++) {
 					if (datosPersonales.get(i).contains("CATEGORÍA")) {
-						String registro = datosPersonales.get(i+1);
-						char [] aux = registro.toCharArray();
+						String registro = datosPersonales.get(i + 1);
+						char[] aux = registro.toCharArray();
 						String categoria = "";
 						for (int j = 0; j < aux.length; j++) {
-							if(aux[j]=='('){
-								categoria = registro.substring(0, j-1);
+							if (aux[j] == '(') {
+								categoria = registro.substring(0, j - 1);
 								investigador.setCategoria(categoria);
 								break;
 							}
 						}
-					//	investigador.setCategoria(datosPersonales.get(i + 1));
+						// investigador.setCategoria(datosPersonales.get(i +
+						// 1));
 					}
 					if (datosPersonales.get(i).equalsIgnoreCase("NOMBRE")) {
 						investigador.setNombre(datosPersonales.get(i + 1));
 					}
 				}
-				
-				if(investigador.getCategoria()==null){
+
+				if (investigador.getCategoria() == null) {
 					investigador.setCategoria("N/D");
 				}
 			} catch (NullPointerException e) {
@@ -263,7 +272,7 @@ public class CvLac {
 
 			try {
 				extraerFormacionAcademica(formacion, investigador);
-				if(investigador.getFormacion()==null){
+				if (investigador.getFormacion() == null) {
 					investigador.setFormacion("N/D");
 				}
 			} catch (Exception e) {
@@ -278,7 +287,6 @@ public class CvLac {
 			try {
 				extraerArticulos(articulos, investigador);
 			} catch (Exception e) {
-
 			}
 			try {
 				extraerLibros(libros, investigador);
@@ -295,13 +303,13 @@ public class CvLac {
 				investigadores.add(investigador);
 				System.out.println(investigador.getNombre());
 				String aux = Constantes.INSERT_INVES + "('" + investigador.getNombre().toUpperCase() + "', '"
-						+ investigador.getCategoria().toUpperCase() + "' , '" + investigador.getFormacion().toUpperCase()
-						+ "')";
+						+ investigador.getCategoria().toUpperCase() + "' , '"
+						+ investigador.getFormacion().toUpperCase() + "')";
 				BdAccess bdA = new BdAccess();
 				bdA.conexion(aux);
 
 			} catch (Exception e) {
-
+				System.err.println("Sin articulos");
 			}
 		}
 
@@ -390,14 +398,7 @@ public class CvLac {
 				eventos.setFecha(fecha);
 				eventos.setLugar(lugar);
 				eventos.setRol(rol);
-
-				if (investigador.getEventos() != null) {
-					eventoAux = investigador.getEventos();
-					eventoAux.add(eventos);
-				} else {
-					eventoAux.add(eventos);
-				}
-
+				eventoAux.add(eventos);
 				investigador.setEventos(eventoAux);
 			}
 		}
@@ -415,6 +416,7 @@ public class CvLac {
 	 * @param investigador,
 	 *            investigador al que se le a asignar la informacion
 	 */
+
 	public void extraerArticulos(ArrayList<String> elementos, Investigador investigador) {
 		boolean esEspecializada = false;
 		String autores = "";
@@ -449,7 +451,7 @@ public class CvLac {
 									break;
 								}
 							}
-						} else if (auxiliar[j] == ':') {
+						} else if (auxiliar[j] == ':' && j+1<auxiliar.length) {
 							posI = j + 1;
 							lugar = cadena.substring(posI + 1);
 						} else {
@@ -471,6 +473,8 @@ public class CvLac {
 			if (elementos.get(i).contains("ED:")) {
 				nomRevista += " Editorial: " + elementos.get(i + 1);
 			}
+			
+		
 			if (elementos.get(i).contains("FASC.")) {
 				String cadena = elementos.get(i + 1);
 				char[] auxiliar = cadena.toCharArray();
@@ -495,11 +499,13 @@ public class CvLac {
 				articulo.setAutores(autores);
 				articulo.setLugar(lugar);
 				articulo.setNomRevista(nomRevista);
+				System.out.println(titulo);
 				articuloAux.add(articulo);
-				investigador.setArticulos(articuloAux);
+				esEspecializada = false;
 			}
 
 		}
+
 	}
 
 	/**
@@ -592,6 +598,7 @@ public class CvLac {
 					}
 
 				}
+
 				libro.setAnio(anio);
 				libro.setAutores(autores);
 				libro.setEditorial(editorial);
@@ -640,11 +647,13 @@ public class CvLac {
 						j = posF;
 					}
 				}
+
 				proyecto.setTipo(tipo);
 				proyecto.setNombre(nombre);
 				proyecto.setFecha(fecha);
 				proyectoAux.add(proyecto);
 				investigador.setProyectos(proyectoAux);
+
 			}
 		}
 	}
@@ -666,6 +675,8 @@ public class CvLac {
 		for (int i = 0; i < elementos.size(); i++) {
 			temporal = elementos.get(i).replaceAll("\n", "");
 			temporal = temporal.replaceAll("&nbsp;", " ");
+			temporal = temporal.replaceAll("  ", " ");
+			temporal = temporal.replaceAll("&AMP;", "&");
 		}
 		char[] auxiliar = temporal.toCharArray();
 		int posI = 0;
