@@ -2,34 +2,33 @@ package co.edu.uniquindio.software3.proyecto.GrupLacScraper;
 
 import java.util.ArrayList;
 
+import co.edu.uniquindio.software3.proyecto.CvLacScraper.Investigador;
+
 public class Grupo {
 	private String nombre;
 	private String añoFundación;
 	private String lider;
 	private String clasificacion;
 	private String areaDeConocimiento;
+	private ArrayList<Investigador> integrantes;
 	private ArrayList<Articulo> articulos;
 	private ArrayList<EventoCientifico> eventos;
-	private ArrayList<InformeInvestigacion> informesInvestigacion;
-	private ArrayList<Innovacion> innovaciones;
 	private ArrayList<Libro> libros;
-	private ArrayList<Software> softwares;
+	private ArrayList<Proyecto> proyectos;
 
 	public Grupo(String nombre, String añoFundación, String lider, String clasificacion, String areaDeConocimiento,
-			ArrayList<Articulo> articulos, ArrayList<EventoCientifico> eventos,
-			ArrayList<InformeInvestigacion> informesInvestigacion, ArrayList<Innovacion> innovaciones,
-			ArrayList<Libro> libros, ArrayList<Software> softwares) {
+			ArrayList<Investigador> integrantes,ArrayList<Articulo> articulos, ArrayList<EventoCientifico> eventos, ArrayList<Libro> libros,
+			ArrayList<Proyecto> proyectos) {
 		this.nombre = nombre;
 		this.añoFundación = añoFundación;
 		this.lider = lider;
 		this.clasificacion = clasificacion;
 		this.areaDeConocimiento = areaDeConocimiento;
+		this.integrantes= integrantes;
 		this.articulos = articulos;
 		this.eventos = eventos;
-		this.informesInvestigacion = informesInvestigacion;
-		this.innovaciones = innovaciones;
 		this.libros = libros;
-		this.softwares = softwares;
+		this.proyectos = proyectos;
 	}
 
 	public Grupo() {
@@ -91,21 +90,7 @@ public class Grupo {
 		this.eventos = eventos;
 	}
 
-	public ArrayList<InformeInvestigacion> getInformesInvestigacion() {
-		return informesInvestigacion;
-	}
-
-	public void setInformesInvestigacion(ArrayList<InformeInvestigacion> informesInvestigacion) {
-		this.informesInvestigacion = informesInvestigacion;
-	}
-
-	public ArrayList<Innovacion> getInnovaciones() {
-		return innovaciones;
-	}
-
-	public void setInnovaciones(ArrayList<Innovacion> innovaciones) {
-		this.innovaciones = innovaciones;
-	}
+	
 
 	public ArrayList<Libro> getLibros() {
 		return libros;
@@ -115,12 +100,20 @@ public class Grupo {
 		this.libros = libros;
 	}
 
-	public ArrayList<Software> getSoftwares() {
-		return softwares;
+	public ArrayList<Proyecto> getProyectos() {
+		return proyectos;
 	}
 
-	public void setSoftwares(ArrayList<Software> softwares) {
-		this.softwares = softwares;
+	public void setProyectos(ArrayList<Proyecto> proyectos) {
+		this.proyectos = proyectos;
 	}
 
+	public ArrayList<Investigador> getIntegrantes() {
+		return integrantes;
+	}
+
+	public void setIntegrantes(ArrayList<Investigador> integrantes) {
+		this.integrantes = integrantes;
+	}
+	
 }

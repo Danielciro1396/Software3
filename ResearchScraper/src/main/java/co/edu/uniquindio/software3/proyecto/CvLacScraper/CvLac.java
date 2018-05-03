@@ -4,7 +4,6 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.sql.Connection;
-import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -25,12 +24,6 @@ import co.edu.uniquindio.software3.proyecto.ResearchScraper.DataSource;
 
 public class CvLac {
 
-	///////////////////////////////////////////
-
-	// Guardar informacion en uppercase y limpio;
-
-	//////////////////////////////////////
-
 	// Lista en la que se guardan las direcciones url de cada investigador
 	public ArrayList<String> urlSet;
 
@@ -39,9 +32,9 @@ public class CvLac {
 	public List<Investigador> investigadores = Collections.synchronizedList(new ArrayList<Investigador>());
 
 	/**
-	 * Este metodo se encarga de hacer el llamado al metodo que lee un archivo
-	 * plano y carga el dataSet de url's, ademas, crea y lanza un pool de hilos
-	 * para mejorar el tiempo de ejecucion del programa
+	 * Este metodo se encarga de hacer el llamado al metodo que lee un archivo plano
+	 * y carga el dataSet de url's, ademas, crea y lanza un pool de hilos para
+	 * mejorar el tiempo de ejecucion del programa
 	 */
 	public void scrapData() {
 
@@ -78,10 +71,17 @@ public class CvLac {
 
 					for (int j = 0; j < listaArticulos.size(); j++) {
 						Articulo a = listaArticulos.get(j);
-						String queryArticulos = Constantes.INSERT_ART + "('" + a.getTitulo() + "','" + a.getAutores()
-								+ "','" + a.getLugar() + "','" + a.getNomRevista() + "','" + a.getAnio() + "',"
-								+ investigador.getId() + ")";
-						 statement.executeQuery(queryArticulos);
+						if (a.isEsEspecializada()) {
+							String queryArticulos = Constantes.INSERT_ART + "('" + a.getAutores() + "','"
+									+ a.getTitulo() + "','" + a.getNomRevista() + "','" + a.getLugar() + "','"
+									+ a.getAnio() + "', 'SI'," + investigador.getId() + ")";
+							statement.executeQuery(queryArticulos);
+						} else {
+							String queryArticulos = Constantes.INSERT_ART + "('" + a.getAutores() + "','"
+									+ a.getTitulo() + "','" + a.getNomRevista() + "','" + a.getLugar() + "','"
+									+ a.getAnio() + "', 'NO'," + investigador.getId() + ")";
+							statement.executeQuery(queryArticulos);
+						}
 					}
 				}
 
@@ -91,9 +91,9 @@ public class CvLac {
 					for (int j = 0; j < listaEventos.size(); j++) {
 						EventoCientifico e = listaEventos.get(j);
 						String queryEventos = Constantes.INSERT_EVT + "('" + e.getNombre() + "','" + e.getTipo() + "','"
-								+ e.getAmbito() + "','" + e.getFecha() + "','" + e.getLugar() + "','" + e.getRol()
+								+ e.getAmbito() + "','" + e.getLugar() + "','" + e.getFecha() + "','" + e.getRol()
 								+ "'," + investigador.getId() + ")";
-						 statement.executeQuery(queryEventos);
+						statement.executeQuery(queryEventos);
 					}
 				}
 
@@ -105,7 +105,7 @@ public class CvLac {
 						String queryLibros = Constantes.INSERT_LIB + "('" + l.getTitulo() + "','" + l.getAutores()
 								+ "','" + l.getLugar() + "','" + l.getAnio() + "','" + l.getEditorial() + "',"
 								+ investigador.getId() + ")";
-						 statement.executeQuery(queryLibros);
+						statement.executeQuery(queryLibros);
 					}
 
 				}
@@ -131,10 +131,10 @@ public class CvLac {
 	}
 
 	/**
-	 * Método provisto por JSoup para comprobar el Status code de la respuesta
-	 * que recibo al hacer la petición Codigos: 200 OK 300 Multiple Choices 301
-	 * Moved Permanently 305 Use Proxy 400 Bad Request 403 Forbidden 404 Not
-	 * Found 500 Internal Server Error 502 Bad Gateway 503 Service Unavailable
+	 * Método provisto por JSoup para comprobar el Status code de la respuesta que
+	 * recibo al hacer la petición Codigos: 200 OK 300 Multiple Choices 301 Moved
+	 * Permanently 305 Use Proxy 400 Bad Request 403 Forbidden 404 Not Found 500
+	 * Internal Server Error 502 Bad Gateway 503 Service Unavailable
 	 * 
 	 * @param url,
 	 *            el enlace de la página web a analizar.
@@ -153,8 +153,8 @@ public class CvLac {
 	}
 
 	/**
-	 * Método que retorna un objeto de la clase Document con el contenido del
-	 * HTML de la web para poder ser parseado posteriormente con JSoup
+	 * Método que retorna un objeto de la clase Document con el contenido del HTML
+	 * de la web para poder ser parseado posteriormente con JSoup
 	 * 
 	 * @param url,
 	 *            el enlace de la página web a analizar.
@@ -172,9 +172,9 @@ public class CvLac {
 	}
 
 	/**
-	 * Metodo que realiza la extraccion de la estructura de una pagina web,
-	 * separa en las diferentas categorias la estructura de la pagina web y
-	 * hacer el llamado al metodo que asigna los datos a cada investigador
+	 * Metodo que realiza la extraccion de la estructura de una pagina web, separa
+	 * en las diferentas categorias la estructura de la pagina web y hacer el
+	 * llamado al metodo que asigna los datos a cada investigador
 	 * 
 	 * @param url,
 	 *            direccion url de un investigador
@@ -347,11 +347,11 @@ public class CvLac {
 				extraerProyectos(proyectos, investigador);
 				investigadores.add(investigador);
 
-//				if (investigador.getLibros() != null) {
-//					for (int i = 0; i < investigador.getLibros().size(); i++) {
-//						System.out.println(investigador.getLibros().get(i).getEditorial());
-//					}
-//				}
+				// if (investigador.getLibros() != null) {
+				// for (int i = 0; i < investigador.getLibros().size(); i++) {
+				// System.out.println(investigador.getLibros().get(i).getEditorial());
+				// }
+				// }
 
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -364,8 +364,8 @@ public class CvLac {
 	 * Metodo que extrae y asigna la formacion academica de cada investigador
 	 * 
 	 * @param elementos,
-	 *            Lista donde esta toda la informacion de la formacion academica
-	 *            del investigador
+	 *            Lista donde esta toda la informacion de la formacion academica del
+	 *            investigador
 	 * @param investigador,
 	 *            investigador al que se le a asignar la informacion
 	 */
@@ -378,13 +378,13 @@ public class CvLac {
 	}
 
 	/**
-	 * Este metodo filtra la informacion y la segmenta en su respectiva
-	 * categoria para poder agregarla ordenadamente a las listas de cada uno de
-	 * los investigadores
+	 * Este metodo filtra la informacion y la segmenta en su respectiva categoria
+	 * para poder agregarla ordenadamente a las listas de cada uno de los
+	 * investigadores
 	 * 
 	 * @param elementos,
-	 *            Lista donde estan todos los eventos en los que ha participado
-	 *            el investigador
+	 *            Lista donde estan todos los eventos en los que ha participado el
+	 *            investigador
 	 * @param investigador,
 	 *            investigador al que se le a asignar la informacion
 	 */
@@ -466,13 +466,13 @@ public class CvLac {
 	}
 
 	/**
-	 * Este metodo filtra la informacion y la segmenta en su respectiva
-	 * categoria para poder agregarla ordenadamente a las listas de cada uno de
-	 * los investigadores
+	 * Este metodo filtra la informacion y la segmenta en su respectiva categoria
+	 * para poder agregarla ordenadamente a las listas de cada uno de los
+	 * investigadores
 	 * 
 	 * @param elementos,
-	 *            Lista donde estan todos los articulos en los que ha
-	 *            participado el investigador
+	 *            Lista donde estan todos los articulos en los que ha participado el
+	 *            investigador
 	 * @param investigador,
 	 *            investigador al que se le a asignar la informacion
 	 */
@@ -570,13 +570,13 @@ public class CvLac {
 	}
 
 	/**
-	 * Este metodo filtra la informacion y la segmenta en su respectiva
-	 * categoria para poder agregarla ordenadamente a las listas de cada uno de
-	 * los investigadores
+	 * Este metodo filtra la informacion y la segmenta en su respectiva categoria
+	 * para poder agregarla ordenadamente a las listas de cada uno de los
+	 * investigadores
 	 * 
 	 * @param elementos,
-	 *            Lista donde estan todos los libros en los que ha participado
-	 *            el investigador
+	 *            Lista donde estan todos los libros en los que ha participado el
+	 *            investigador
 	 * @param investigador,
 	 *            investigador al que se le a asignar la informacion
 	 */
@@ -678,13 +678,13 @@ public class CvLac {
 	}
 
 	/**
-	 * Este metodo filtra la informacion y la segmenta en su respectiva
-	 * categoria para poder agregarla ordenadamente a las listas de cada uno de
-	 * los investigadores
+	 * Este metodo filtra la informacion y la segmenta en su respectiva categoria
+	 * para poder agregarla ordenadamente a las listas de cada uno de los
+	 * investigadores
 	 * 
 	 * @param elementos,
-	 *            Lista donde estan todos los proyectos en los que ha
-	 *            participado el investigador
+	 *            Lista donde estan todos los proyectos en los que ha participado el
+	 *            investigador
 	 * @param investigador,
 	 *            investigador al que se le a asignar la informacion
 	 */
