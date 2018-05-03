@@ -3,7 +3,9 @@ package co.edu.uniquindio.software3.proyecto.CvLacScraper;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.sql.Connection;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -18,8 +20,8 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import co.edu.uniquindio.software3.proyecto.ResearchScraper.ArrayThread;
-import co.edu.uniquindio.software3.proyecto.ResearchScraper.BdAccess;
 import co.edu.uniquindio.software3.proyecto.ResearchScraper.Constantes;
+import co.edu.uniquindio.software3.proyecto.ResearchScraper.DataSource;
 
 public class CvLac {
 
@@ -48,7 +50,6 @@ public class CvLac {
 		long elapsedTime = 0;
 		leerDataSet();
 		ExecutorService executor = Executors.newFixedThreadPool(5);
-		System.err.println(urlSet.size());
 		for (int i = 0; i < urlSet.size(); i++) {
 			Runnable worker = new ArrayThread(urlSet.get(i), i, 0, this, null);
 			executor.execute(worker);
@@ -59,6 +60,72 @@ public class CvLac {
 			elapsedTime = stopTime - startTime;
 
 		}
+
+		try {
+			Connection connection = DataSource.getInstance().getConnection();
+
+			Statement statement = connection.createStatement();
+
+			for (int i = 0; i < investigadores.size(); i++) {
+				Investigador investigador = investigadores.get(i);
+				String query = Constantes.INSERT_INVES + "(" + investigador.getId() + ", '"
+						+ investigador.getNombre().toUpperCase() + "', '" + investigador.getCategoria().toUpperCase()
+						+ "' , '" + investigador.getFormacion().toUpperCase() + "')";
+				statement.executeQuery(query);
+
+				if (investigador.getArticulos() != null) {
+					ArrayList<Articulo> listaArticulos = investigador.getArticulos();
+
+					for (int j = 0; j < listaArticulos.size(); j++) {
+						Articulo a = listaArticulos.get(j);
+						String queryArticulos = Constantes.INSERT_ART + "('" + a.getTitulo() + "','" + a.getAutores()
+								+ "','" + a.getLugar() + "','" + a.getNomRevista() + "','" + a.getAnio() + "',"
+								+ investigador.getId() + ")";
+						 statement.executeQuery(queryArticulos);
+					}
+				}
+
+				if (investigador.getEventos() != null) {
+					ArrayList<EventoCientifico> listaEventos = investigador.getEventos();
+
+					for (int j = 0; j < listaEventos.size(); j++) {
+						EventoCientifico e = listaEventos.get(j);
+						String queryEventos = Constantes.INSERT_EVT + "('" + e.getNombre() + "','" + e.getTipo() + "','"
+								+ e.getAmbito() + "','" + e.getFecha() + "','" + e.getLugar() + "','" + e.getRol()
+								+ "'," + investigador.getId() + ")";
+						 statement.executeQuery(queryEventos);
+					}
+				}
+
+				if (investigador.getLibros() != null) {
+					ArrayList<Libro> listaLibros = investigador.getLibros();
+
+					for (int j = 0; j < listaLibros.size(); j++) {
+						Libro l = listaLibros.get(j);
+						String queryLibros = Constantes.INSERT_LIB + "('" + l.getTitulo() + "','" + l.getAutores()
+								+ "','" + l.getLugar() + "','" + l.getAnio() + "','" + l.getEditorial() + "',"
+								+ investigador.getId() + ")";
+						 statement.executeQuery(queryLibros);
+					}
+
+				}
+
+				if (investigador.getProyectos() != null) {
+					ArrayList<Proyecto> listaProyecto = investigador.getProyectos();
+
+					for (int j = 0; j < listaProyecto.size(); j++) {
+						Proyecto p = listaProyecto.get(j);
+						String queryProyectos = Constantes.INSERT_PROY + "('" + p.getNombre() + "','" + p.getTipo()
+								+ "','" + p.getFecha() + "'," + investigador.getId() + ")";
+						statement.executeQuery(queryProyectos);
+					}
+				}
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
 		System.err.println(elapsedTime);
 
 	}
@@ -184,9 +251,12 @@ public class CvLac {
 
 			}
 
+			// Obtenemos el id del investigador a partir de la URL
+			String id = url.substring(87);
+
 			extraerDatos(limpiar(elemInfoPersonal), limpiar(elemFormacionAcam), limpiar(elemEventos),
 					limpiar(elemArticulos), limpiar(elemLibros), limpiar(elemInformes), limpiar(elemProyectos),
-					limpiar(elemPublicacionesN));
+					limpiar(elemPublicacionesN), id);
 
 		} else {
 			System.out.println("El Status Code no es OK es: " + getStatusConnectionCode(url));
@@ -219,10 +289,14 @@ public class CvLac {
 	 */
 	public void extraerDatos(ArrayList<String> datosPersonales, ArrayList<String> formacion, ArrayList<String> eventos,
 			ArrayList<String> articulos, ArrayList<String> libros, ArrayList<String> informes,
-			ArrayList<String> proyectos, ArrayList<String> publicacionesN) {
+			ArrayList<String> proyectos, ArrayList<String> publicacionesN, String id) {
+
 		Investigador investigador = new Investigador();
+
+		// Si no posee datos personales, el perfil es privado.
 		if (datosPersonales.size() == 0) {
 			investigador.setNombre("PERFIL PRIVADO");
+			investigador.setId(Integer.parseInt(id));
 			investigador.setCategoria("N/D");
 			investigador.setFormacion("N/D");
 			ArrayList<EventoCientifico> eventos1 = new ArrayList<>();
@@ -235,12 +309,7 @@ public class CvLac {
 			investigador.setProyectos(proyectos1);
 			investigador.setLibros(libros1);
 			investigadores.add(investigador);
-			System.out.println(investigador.getNombre());
-			String aux = Constantes.INSERT_INVES + "('" + investigador.getNombre().toUpperCase() + "', '"
-					+ investigador.getCategoria().toUpperCase() + "' , '" + investigador.getFormacion().toUpperCase()
-					+ "')";
-			BdAccess bdA = new BdAccess();
-			bdA.conexion(aux);
+
 		} else {
 			try {
 				for (int i = 0; i < datosPersonales.size(); i++) {
@@ -255,61 +324,37 @@ public class CvLac {
 								break;
 							}
 						}
-						// investigador.setCategoria(datosPersonales.get(i +
-						// 1));
 					}
 					if (datosPersonales.get(i).equalsIgnoreCase("NOMBRE")) {
 						investigador.setNombre(datosPersonales.get(i + 1));
 					}
 				}
 
+				investigador.setId(Integer.parseInt(id));
+
 				if (investigador.getCategoria() == null) {
 					investigador.setCategoria("N/D");
 				}
-			} catch (NullPointerException e) {
 
-			}
-
-			try {
 				extraerFormacionAcademica(formacion, investigador);
 				if (investigador.getFormacion() == null) {
 					investigador.setFormacion("N/D");
 				}
-			} catch (Exception e) {
 
-			}
-
-			try {
 				extraerEventos(eventos, investigador);
-			} catch (Exception e) {
-
-			}
-			try {
 				extraerArticulos(articulos, investigador);
-			} catch (Exception e) {
-			}
-			try {
 				extraerLibros(libros, investigador);
-			} catch (Exception e) {
-
-			}
-			try {
 				extraerProyectos(proyectos, investigador);
-			} catch (Exception e) {
-
-			}
-
-			try {
 				investigadores.add(investigador);
-				System.out.println(investigador.getNombre());
-				String aux = Constantes.INSERT_INVES + "('" + investigador.getNombre().toUpperCase() + "', '"
-						+ investigador.getCategoria().toUpperCase() + "' , '"
-						+ investigador.getFormacion().toUpperCase() + "')";
-				BdAccess bdA = new BdAccess();
-				bdA.conexion(aux);
+
+//				if (investigador.getLibros() != null) {
+//					for (int i = 0; i < investigador.getLibros().size(); i++) {
+//						System.out.println(investigador.getLibros().get(i).getEditorial());
+//					}
+//				}
 
 			} catch (Exception e) {
-				System.err.println("Sin articulos");
+				e.printStackTrace();
 			}
 		}
 
@@ -355,6 +400,7 @@ public class CvLac {
 		aux = StringUtils.stripAccents(investigador.getNombre());
 		ArrayList<EventoCientifico> eventoAux = new ArrayList<>();
 		for (int i = 0; i < elementos.size(); i++) {
+
 			EventoCientifico eventos = new EventoCientifico();
 			if (elementos.get(i).contains("NOMBRE DEL EVENTO:")) {
 				nombre = elementos.get(i + 1);
@@ -363,13 +409,18 @@ public class CvLac {
 				tipo = elementos.get(i + 1);
 			}
 			if (elementos.get(i).contains("ÁMBITO:")) {
-				ambito = elementos.get(i + 1);
+				if (elementos.get(i + 1).contains("REALIZADO EL")) {
+					ambito = "N/D";
+				} else {
+					ambito = elementos.get(i + 1);
+				}
+
 			}
 			if (elementos.get(i).contains("REALIZADO EL:")) {
 				String cadena = elementos.get(i);
 				fecha = cadena.substring(13, 17);
 				if (fecha.contains(",")) {
-					fecha = "NO REGISTRA";
+					fecha = "N/D";
 				}
 
 				char[] auxiliar = cadena.toCharArray();
@@ -381,8 +432,12 @@ public class CvLac {
 						for (int k = posI; k < auxiliar.length; k++) {
 							if (auxiliar[k] == '-') {
 								posF = k;
-								lugar = cadena.substring(posI, posF);
-								j = k;
+								if (cadena.substring(posI, posF).equals(" ")) {
+									lugar = "N/D";
+								} else {
+									lugar = cadena.substring(posI, posF);
+								}
+								j = auxiliar.length;
 								break;
 							}
 						}
@@ -391,7 +446,12 @@ public class CvLac {
 			}
 			aux2 = StringUtils.stripAccents(elementos.get(i));
 			if (aux2.equalsIgnoreCase(aux) && elementos.get(i + 1).contains("ROL EN EL EVENTO:")) {
-				rol = elementos.get(i + 2);
+				if (StringUtils.isNumeric(elementos.get(i + 2))) {
+					rol = "N/D";
+				} else {
+					rol = elementos.get(i + 2);
+				}
+
 				eventos.setNombre(nombre);
 				eventos.setTipo(tipo);
 				eventos.setAmbito(ambito);
@@ -451,7 +511,7 @@ public class CvLac {
 									break;
 								}
 							}
-						} else if (auxiliar[j] == ':' && j+1<auxiliar.length) {
+						} else if (auxiliar[j] == ':' && j + 1 < auxiliar.length) {
 							posI = j + 1;
 							lugar = cadena.substring(posI + 1);
 						} else {
@@ -470,11 +530,10 @@ public class CvLac {
 				}
 				nomRevista = elementos.get(i + 1);
 			}
-			if (elementos.get(i).contains("ED:")) {
-				nomRevista += " Editorial: " + elementos.get(i + 1);
-			}
-			
-		
+			// if (elementos.get(i).contains("ED:")) {
+			// nomRevista += " Editorial: " + elementos.get(i + 1);
+			// }
+
 			if (elementos.get(i).contains("FASC.")) {
 				String cadena = elementos.get(i + 1);
 				char[] auxiliar = cadena.toCharArray();
@@ -499,8 +558,10 @@ public class CvLac {
 				articulo.setAutores(autores);
 				articulo.setLugar(lugar);
 				articulo.setNomRevista(nomRevista);
-				System.out.println(titulo);
 				articuloAux.add(articulo);
+				investigador.setArticulos(articuloAux);
+				// insertarArticulos(articulo, investigador.getId());
+
 				esEspecializada = false;
 			}
 
@@ -568,7 +629,7 @@ public class CvLac {
 
 							for (int m = posI; m < auxiliar.length; m++) {
 								if (auxiliar[m] == 'E' && auxiliar[m + 1] == 'D' && auxiliar[m + 2] == ':') {
-									posF = m - 3;
+									posF = m - 2;
 									anio = cadena.substring(posI, posF);
 									j = m - 1;
 									break;
@@ -578,7 +639,11 @@ public class CvLac {
 						} else if (auxiliar[j] == 'E' && auxiliar[j + 1] == 'D' && auxiliar[j + 2] == ':') {
 							posI = j + 3;
 							posF = cadena.length();
-							editorial = cadena.substring(posI, posF);
+							if (posI == posF) {
+								editorial = "N/D";
+							} else {
+								editorial = cadena.substring(posI, posF);
+							}
 							j = posF;
 						}
 
@@ -677,6 +742,7 @@ public class CvLac {
 			temporal = temporal.replaceAll("&nbsp;", " ");
 			temporal = temporal.replaceAll("  ", " ");
 			temporal = temporal.replaceAll("&AMP;", "&");
+			temporal = temporal.replaceAll("'", "");
 		}
 		char[] auxiliar = temporal.toCharArray();
 		int posI = 0;
@@ -751,98 +817,5 @@ public class CvLac {
 	/**
 	 * 
 	 */
-	public void llenarBD() {
-
-		BdAccess bdA = new BdAccess();
-		String aux;
-		System.out.println(investigadores.size());
-		for (int i = 0; i < investigadores.size(); i++) {
-			aux = Constantes.INSERT_INVES + "('" + investigadores.get(i).getNombre().toUpperCase() + "')";
-			// System.out.println(i+1+
-			// investigadores.get(i).getNombre().toUpperCase());
-			bdA.conexion(aux);
-
-		}
-	}
-
-	// public ArrayList<String> getElemInfoPersonal() {
-	// return elemInfoPersonal;
-	// }
-	//
-	// public void setElemInfoPersonal(ArrayList<String> elemInfoPersonal) {
-	// this.elemInfoPersonal = elemInfoPersonal;
-	// }
-	//
-	// public ArrayList<String> getElemFormacionAcam() {
-	// return elemFormacionAcam;
-	// }
-	//
-	// public void setElemFormacionAcam(ArrayList<String> elemFormacionAcam) {
-	// this.elemFormacionAcam = elemFormacionAcam;
-	// }
-	//
-	// public ArrayList<String> getElemEventos() {
-	// return elemEventos;
-	// }
-	//
-	// public void setElemEventos(ArrayList<String> elemEventos) {
-	// this.elemEventos = elemEventos;
-	// }
-	//
-	// public ArrayList<String> getElemArticulos() {
-	// return elemArticulos;
-	// }
-	//
-	// public void setElemArticulos(ArrayList<String> elemArticulos) {
-	// this.elemArticulos = elemArticulos;
-	// }
-	//
-	// public ArrayList<String> getElemLibros() {
-	// return elemLibros;
-	// }
-	//
-	// public void setElemLibros(ArrayList<String> elemLibros) {
-	// this.elemLibros = elemLibros;
-	// }
-	//
-	// public ArrayList<String> getElemInformes() {
-	// return elemInformes;
-	// }
-	//
-	// public void setElemInformes(ArrayList<String> elemInformes) {
-	// this.elemInformes = elemInformes;
-	// }
-	//
-	// public ArrayList<String> getElemProyectos() {
-	// return elemProyectos;
-	// }
-	//
-	// public void setElemProyectos(ArrayList<String> elemProyectos) {
-	// this.elemProyectos = elemProyectos;
-	// }
-	//
-	// public ArrayList<String> getElemPublicacionesN() {
-	// return elemPublicacionesN;
-	// }
-	//
-	// public void setElemPublicacionesN(ArrayList<String> elemPublicacionesN) {
-	// this.elemPublicacionesN = elemPublicacionesN;
-	// }
-	//
-	// public List<Investigador> getInvestigadores() {
-	// return investigadores;
-	// }
-	//
-	// public void setInvestigadores(List<Investigador> investigadores) {
-	// this.investigadores = investigadores;
-	// }
-	//
-	// public ArrayList<String> getUrlSet() {
-	// return urlSet;
-	// }
-	//
-	// public void setUrlSet(ArrayList<String> urlSet) {
-	// this.urlSet = urlSet;
-	// }
 
 }
