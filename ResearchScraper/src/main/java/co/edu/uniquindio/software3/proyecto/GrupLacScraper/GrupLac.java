@@ -152,7 +152,8 @@ public class GrupLac {
 
 			// Obtenemos el id del grupo a partir de la URL
 			String id = url.substring(81);
-
+			
+		
 			extraerDatos(limpiar(elemInformacion), limpiar(elemArticulos), limpiar(elemEventos), limpiar(elemInformes),
 					limpiar(elemInnovaciones), limpiar(elemLibros), limpiar(elemSoftwares),limpiar(elemProyectos), id);
 
@@ -246,12 +247,11 @@ public class GrupLac {
 			grupo.setId(Integer.parseInt(id));
 			
 			extraerInformacionBasica(datosBasicos, grupo);
-			System.out.println(grupo.getNombre());
 			extraerArticulos(articulos, grupo);
-			
 			extraerEventos(eventos, grupo);
 			extraerLibros(libros, grupo);
 			extraerProyectos(proyectos, grupo);
+			grupos.add(grupo);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -266,7 +266,6 @@ public class GrupLac {
 	 *            atributo de tipo Grupo para almacenar los datos extraidos
 	 */
 	public void extraerInformacionBasica(ArrayList<String> elementos, Grupo grupo) {
-		ArrayList<String> aux = new ArrayList<>();
 		String anio;
 		String lider;
 		String clasificacion;
@@ -280,7 +279,11 @@ public class GrupLac {
 				grupo.setNombre(titulo);
 				grupo.setLider(lider);
 			} else if (elementos.get(i).equals("CLASIFICACIÓN")) {
+				if (elementos.get(i+1).equals("ÁREA DE CONOCIMIENTO")) {
+				clasificacion = "N/D";
+				}else {
 				clasificacion = elementos.get(i + 1);
+				}
 				grupo.setClasificacion(clasificacion);
 			} else if (elementos.get(i).equals("ÁREA DE CONOCIMIENTO")) {
 				area = elementos.get(i + 1);
@@ -304,15 +307,16 @@ public class GrupLac {
 		String lugar = "";
 		String tipoParticipacion = "";
 		ArrayList<EventoCientifico> auxEvento = new ArrayList<>();
-		EventoCientifico evento = new EventoCientifico();
+
 		for (int i = 0; i < elementos.size(); i++) {
+			EventoCientifico evento = new EventoCientifico();
 			if (elementos.get(i).contains(".-")) {
 				tipo = elementos.get(i + 1);
 			}
 			if (elementos.get(i).startsWith(":")) {
-				nombre = elementos.get(i).substring(2);
+				nombre = elementos.get(i).substring(2).replaceAll("&AMP;", "&");
 			}
-			if (elementos.get(i).contains("DESDE")) {
+			if (elementos.get(i).contains("DESDE") && elementos.get(i).contains("HASTA")) {
 				String cadena = elementos.get(i);
 				char[] aux = cadena.toCharArray();
 				int posF = 0;
@@ -320,6 +324,9 @@ public class GrupLac {
 					if (aux[j] == ',') {
 						posF = j;
 						lugar = cadena.substring(0, posF);
+						if (lugar==null) {
+							lugar="N/D";
+						}
 						j = posF;
 						break;
 					}
@@ -352,6 +359,9 @@ public class GrupLac {
 					if (aux[j] == ',') {
 						posF = j;
 						ambito = cadena.substring(posI, posF);
+						if (ambito==null) {
+							ambito="N/D";
+						}
 						break;
 					}
 				}
@@ -362,25 +372,30 @@ public class GrupLac {
 				char aux[] = cadena.toCharArray();
 				for (int j = 0; j < aux.length; j++) {
 					if (aux[j] == 'N' && aux[j + 1] == ':') {
-						posI = j + 3;
+						try {
+							posI = j + 3;
+							tipoParticipacion = cadena.substring(posI);
+							break;
+						} catch (Exception e) {
+							tipoParticipacion= "N/D";
+							break;
+						}
 						
-						tipoParticipacion = cadena.substring(posI);
-						break;
 					}
 				}
+				evento.setNombre(nombre);
+				evento.setTipo(tipo);
+				evento.setLugar(lugar);
+				evento.setFecha(fecha);
+				evento.setAmbito(ambito);
+				evento.setTipoParticipacion(tipoParticipacion);
+				auxEvento.add(evento);
+				grupo.setEventos(auxEvento);
+				
 			}
+			
+			
 		}
-		System.err.println(nombre);
-		System.err.println(tipoParticipacion);
-		evento.setTipo(tipo);
-		evento.setNombre(nombre);
-		evento.setLugar(lugar);
-		evento.setFecha(fecha);
-		evento.setAmbito(ambito);
-		evento.setTipoParticipacion(tipoParticipacion);
-		auxEvento.add(evento);
-		grupo.setEventos(auxEvento);
-
 	}
 
 	/**
@@ -397,10 +412,11 @@ public class GrupLac {
 		String anio = "";
 		String tipo = "";
 		ArrayList<Articulo> auxArticulos = new ArrayList<>();
-		Articulo articulo = new Articulo();
+		
 		for (int i = 0; i < elementos.size(); i++) {
+			Articulo articulo = new Articulo();
 			if (elementos.get(i).contains(".-")) {
-				titulo = elementos.get(i + 2);
+				titulo = elementos.get(i + 2).replaceAll("&", "&");
 			}
 			if (elementos.get(i).contains(".-")) {
 				tipo = elementos.get(i + 1).replaceAll(":", "");
@@ -412,26 +428,27 @@ public class GrupLac {
 				for (int j = 0; j < aux.length; j++) {
 					if (aux[j] == ':') {
 						posI = j + 2;
-						autores = cadena.substring(posI);
+						autores = cadena.substring(posI,aux.length-1);
+						break;
 					}
 				}
 			}
 
-			if (elementos.get(i).contains("ISSN")) {
+			if (elementos.get(i).contains("ISSN:")) {
 				String cadena = elementos.get(i);
 				char[] aux = cadena.toCharArray();
-				int posF = 0;
 				for (int j = 0; j < aux.length; j++) {
 					if (aux[j] == ',') {
-						posF = j;
-						lugar = cadena.substring(0, posF);
-						j = posF;
+						lugar = cadena.substring(0, j);
+						if (lugar==null) {
+							lugar="N/D";
+						}
 						break;
 					}
 				}
 
 			}
-			if (elementos.get(i).contains("ISSN")) {
+			if (elementos.get(i).contains("ISSN:")) {
 				String cadena = elementos.get(i);
 				int posI = 0;
 				int posF = 0;
@@ -441,14 +458,21 @@ public class GrupLac {
 						posI = j + 2;
 					}
 					if (aux[j] == 'I' && aux[j + 1] == 'S' && aux[j + 2] == 'S') {
-						posF = j - 1;
-						nomRevista = cadena.substring(posI, posF);
-						break;
+						try {
+							posF = j - 1;
+							nomRevista = cadena.substring(posI, posF);
+							break;
+						} catch (Exception e) {
+							nomRevista="N/D";
+							break;
+						}
+						
+						
 					}
 				}
 
 			}
-			if (elementos.get(i).contains("VOL")) {
+			if (elementos.get(i).contains("VOL:")) {
 				String cadena = elementos.get(i);
 				int posI = 0;
 				int posF = 0;
@@ -460,20 +484,22 @@ public class GrupLac {
 					if (aux[j] == 'V' && aux[j + 1] == 'O' && aux[j + 2] == 'L') {
 						posF = j - 1;
 						anio = cadena.substring(posI, posF);
+						articulo.setAnio(anio);
+						articulo.setAutores(autores);
+						articulo.setLugar(lugar);
+						articulo.setNomRevista(nomRevista);
+						articulo.setTipo(tipo);
+						articulo.setTitulo(titulo);
+						auxArticulos.add(articulo);
+						grupo.setArticulos(auxArticulos);
 						break;
 					}
 				}
+				
 
 			}
 		}
-		articulo.setAnio(anio);
-		articulo.setAutores(autores);
-		articulo.setLugar(lugar);
-		articulo.setNomRevista(nomRevista);
-		articulo.setTipo(tipo);
-		articulo.setTitulo(titulo);
-		auxArticulos.add(articulo);
-		grupo.setArticulos(auxArticulos);
+		
 	}
 
 	/**
@@ -567,10 +593,11 @@ public class GrupLac {
 		String anio = "";
 		String editorial = "";
 		ArrayList<Libro> auxLib = new ArrayList<>();
-		Libro libro = new Libro();
+		
 		for (int i = 0; i < elementos.size(); i++) {
+			Libro libro = new Libro();
 			if (elementos.get(i).contains(".-")) {
-				titulo = elementos.get(i + 2).substring(2);
+				titulo = elementos.get(i + 2).substring(2).replaceAll("&AMP;", "&");
 			}
 			if (elementos.get(i).contains("ISBN")) {
 				int posF = 0;
@@ -624,19 +651,20 @@ public class GrupLac {
 				for (int j = 0; j < aux.length; j++) {
 					if (aux[j] == 'E' && aux[j + 1] == 'S' && aux[j + 2] == ':') {
 						posI = j + 4;
-						autores = cadena.substring(posI);
+						autores = cadena.substring(posI,aux.length-1);
+						libro.setAnio(anio);
+						libro.setAutores(autores);
+						libro.setEditorial(editorial);
+						libro.setLugar(lugar);
+						libro.setTitulo(titulo);
+						auxLib.add(libro);
+						grupo.setLibros(auxLib);
 						break;
 					}
 				}
 			}
 		}
-		libro.setAnio(anio);
-		libro.setAutores(autores);
-		libro.setEditorial(editorial);
-		libro.setLugar(lugar);
-		libro.setTitulo(titulo);
-		auxLib.add(libro);
-		grupo.setLibros(auxLib);
+		
 	}
 
 	public void extraerProyectos(ArrayList<String> elementos, Grupo grupo) {
@@ -644,13 +672,14 @@ public class GrupLac {
 		String nombre = "";
 		String fecha = "";
 		ArrayList<Proyecto> auxPro = new ArrayList<>();
-		Proyecto proyecto = new Proyecto();
+		
 		for (int i = 0; i < elementos.size(); i++) {
+			Proyecto proyecto = new Proyecto();
 			if (elementos.get(i).contains(".-")) {
 				tipo = elementos.get(i + 1);
 			}
 			if (elementos.get(i).contains(".-")) {
-				nombre = elementos.get(i + 2).substring(2);
+				nombre = elementos.get(i + 2).substring(2).replaceAll("&AMP;", "&");
 			}
 			if (elementos.get(i).contains(".-")) {
 				if (elementos.get(i + 3).contains(".-")) {
@@ -658,14 +687,15 @@ public class GrupLac {
 				} else {
 					fecha = elementos.get(i + 3);
 				}
+				proyecto.setFecha(fecha);
+				proyecto.setNombre(nombre);
+				proyecto.setTipo(tipo);
+				auxPro.add(proyecto);
+				grupo.setProyectos(auxPro);
 			}
 
 		}
-		proyecto.setFecha(fecha);
-		proyecto.setNombre(nombre);
-		proyecto.setTipo(tipo);
-		auxPro.add(proyecto);
-		grupo.setProyectos(auxPro);
+		
 	}
 
 	// public void extraerIntegrantes(ArrayList<String> elementos, Grupo grupo) {
