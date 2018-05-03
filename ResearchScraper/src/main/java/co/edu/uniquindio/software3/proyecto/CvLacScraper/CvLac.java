@@ -286,6 +286,8 @@ public class CvLac {
 	 * @param publicacionesN,
 	 *            lista con las publicaciones en revistas no especializadas
 	 *            realizadas por cada investigador
+	 * @param id,
+	 *            identificador unico de cada investigador
 	 */
 	public void extraerDatos(ArrayList<String> datosPersonales, ArrayList<String> formacion, ArrayList<String> eventos,
 			ArrayList<String> articulos, ArrayList<String> libros, ArrayList<String> informes,
@@ -347,11 +349,6 @@ public class CvLac {
 				extraerProyectos(proyectos, investigador);
 				investigadores.add(investigador);
 
-				// if (investigador.getLibros() != null) {
-				// for (int i = 0; i < investigador.getLibros().size(); i++) {
-				// System.out.println(investigador.getLibros().get(i).getEditorial());
-				// }
-				// }
 
 			} catch (Exception e) {
 				e.printStackTrace();

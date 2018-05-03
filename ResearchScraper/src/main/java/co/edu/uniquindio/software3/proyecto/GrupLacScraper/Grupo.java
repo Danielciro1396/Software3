@@ -5,8 +5,9 @@ import java.util.ArrayList;
 import co.edu.uniquindio.software3.proyecto.CvLacScraper.Investigador;
 
 public class Grupo {
+	private int id;
 	private String nombre;
-	private String añoFundación;
+	private String anioFundacion;
 	private String lider;
 	private String clasificacion;
 	private String areaDeConocimiento;
@@ -16,11 +17,12 @@ public class Grupo {
 	private ArrayList<Libro> libros;
 	private ArrayList<Proyecto> proyectos;
 
-	public Grupo(String nombre, String añoFundación, String lider, String clasificacion, String areaDeConocimiento,
+	public Grupo(int id, String nombre, String anioFundacion, String lider, String clasificacion, String areaDeConocimiento,
 			ArrayList<Investigador> integrantes,ArrayList<Articulo> articulos, ArrayList<EventoCientifico> eventos, ArrayList<Libro> libros,
 			ArrayList<Proyecto> proyectos) {
+		this.id = id;
 		this.nombre = nombre;
-		this.añoFundación = añoFundación;
+		this.anioFundacion = anioFundacion;
 		this.lider = lider;
 		this.clasificacion = clasificacion;
 		this.areaDeConocimiento = areaDeConocimiento;
@@ -33,6 +35,14 @@ public class Grupo {
 
 	public Grupo() {
 	}
+	
+	public int getId() {
+		return id;
+	}
+
+	public void setId(int id) {
+		this.id = id;
+	}
 
 	public String getNombre() {
 		return nombre;
@@ -42,12 +52,12 @@ public class Grupo {
 		this.nombre = nombre;
 	}
 
-	public String getAñoFundación() {
-		return añoFundación;
+	public String getAnioFundacion() {
+		return anioFundacion;
 	}
 
-	public void setAñoFundación(String añoFundación) {
-		this.añoFundación = añoFundación;
+	public void setAnioFundacion(String anioFundacion) {
+		this.anioFundacion = anioFundacion;
 	}
 
 	public String getLider() {

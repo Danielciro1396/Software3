@@ -3,9 +3,13 @@ package co.edu.uniquindio.software3.proyecto.GrupLacScraper;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.sql.Connection;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import org.jsoup.Connection.Response;
 import org.jsoup.Jsoup;
@@ -14,15 +18,17 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import co.edu.uniquindio.software3.proyecto.CvLacScraper.Investigador;
+import co.edu.uniquindio.software3.proyecto.ResearchScraper.ArrayThread;
+import co.edu.uniquindio.software3.proyecto.ResearchScraper.Constantes;
+import co.edu.uniquindio.software3.proyecto.ResearchScraper.DataSource;
 
 public class GrupLac {
 
 	ArrayList<String> urlSet;
 
-	 String titulo;
+	String titulo;
 
-	 List<Grupo> grupos = Collections.synchronizedList(new ArrayList<Grupo>());
-	
+	List<Grupo> grupos = Collections.synchronizedList(new ArrayList<Grupo>());
 
 	/**
 	 * Método provisto por JSoup para comprobar el Status code de la respuesta que
@@ -74,28 +80,27 @@ public class GrupLac {
 	 *            direccion url de un investigador
 	 */
 	public void extraer(String url) {
-		 
 
 		if (getStatusConnectionCode(url) == 200) {
-			 ArrayList<String> elemInformacion = new ArrayList<>();
+			ArrayList<String> elemInformacion = new ArrayList<>();
 
-			 ArrayList<String> elemEventos = new ArrayList<>();
+			ArrayList<String> elemEventos = new ArrayList<>();
 
-			 ArrayList<String> elemArticulos = new ArrayList<>();
+			ArrayList<String> elemArticulos = new ArrayList<>();
 
-			 ArrayList<String> elemLibros = new ArrayList<>();
+			ArrayList<String> elemLibros = new ArrayList<>();
 
-			 ArrayList<String> elemCapLibros = new ArrayList<>();
+			ArrayList<String> elemCapLibros = new ArrayList<>();
 
-			 ArrayList<String> elemInformes = new ArrayList<>();
+			ArrayList<String> elemInformes = new ArrayList<>();
 
-			 ArrayList<String> elemSoftwares = new ArrayList<>();
+			ArrayList<String> elemSoftwares = new ArrayList<>();
 
-			 ArrayList<String> elemInnovaciones = new ArrayList<>();
+			ArrayList<String> elemInnovaciones = new ArrayList<>();
 
-			 ArrayList<String> elemProyectos = new ArrayList<>();
+			ArrayList<String> elemProyectos = new ArrayList<>();
 
-			 ArrayList<String> elemIntegrantes = new ArrayList<>();
+			ArrayList<String> elemIntegrantes = new ArrayList<>();
 			// Obtengo el HTML de la web en un objeto Document
 			Document document = getHtmlDocument(url);
 			// Busca todas las coincidencias que estan dentro de
@@ -111,14 +116,6 @@ public class GrupLac {
 
 			for (Element elem : entradas) {
 
-				// nombre += elem.toString() + "\n";
-				// BufferedWriter writer = null;
-				// try {
-				// writer = new BufferedWriter(new FileWriter("d://test.txt"));
-				// writer.write(nombre);
-				// } catch (IOException e) {
-				// e.printStackTrace();
-				// }
 				if (elem.text().contains("Datos básicos")) {
 					elemInformacion.add(elem.toString());
 				}
@@ -153,10 +150,16 @@ public class GrupLac {
 				}
 			}
 
+			// Obtenemos el id del grupo a partir de la URL
+			String id = url.substring(81);
+
+			extraerDatos(limpiar(elemInformacion), limpiar(elemArticulos), limpiar(elemEventos), limpiar(elemInformes),
+					limpiar(elemInnovaciones), limpiar(elemLibros), limpiar(elemSoftwares),limpiar(elemProyectos), id);
+
 		} else {
 			System.out.println("El Status Code no es OK es: " + getStatusConnectionCode(url));
 		}
-		
+
 	}
 
 	/**
@@ -221,9 +224,6 @@ public class GrupLac {
 		}
 
 		elementosLimpio = aux;
-//		 for (int i = 0; i < elementosLimpio.size(); i++) {
-//		 System.out.println(elementosLimpio.get(i));
-//		 }
 		return elementosLimpio;
 	}
 
@@ -236,15 +236,24 @@ public class GrupLac {
 	 * @param innovaciones
 	 * @param libros
 	 * @param softwares
+	 * @param id
 	 */
 	public void extraerDatos(ArrayList<String> datosBasicos, ArrayList<String> articulos, ArrayList<String> eventos,
 			ArrayList<String> informes, ArrayList<String> innovaciones, ArrayList<String> libros,
-			ArrayList<String> softwares) {
+			ArrayList<String> softwares, ArrayList<String> proyectos, String id) {
 		Grupo grupo = new Grupo();
-		try {
+		try {			
+			grupo.setId(Integer.parseInt(id));
 			
-		} catch (NullPointerException e) {
-
+			extraerInformacionBasica(datosBasicos, grupo);
+			System.out.println(grupo.getNombre());
+			extraerArticulos(articulos, grupo);
+			
+			extraerEventos(eventos, grupo);
+			extraerLibros(libros, grupo);
+			extraerProyectos(proyectos, grupo);
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
 	}
 
@@ -265,13 +274,14 @@ public class GrupLac {
 		for (int i = 0; i < elementos.size(); i++) {
 			if (elementos.get(i).equals("AÑO Y MES DE FORMACIÓN")) {
 				anio = elementos.get(i + 1);
-				grupo.setAñoFundación(anio);
+				grupo.setAnioFundacion(anio);
 			} else if (elementos.get(i).equals("LÍDER")) {
 				lider = elementos.get(i + 1);
+				grupo.setNombre(titulo);
 				grupo.setLider(lider);
 			} else if (elementos.get(i).equals("CLASIFICACIÓN")) {
-				 clasificacion = elementos.get(i + 1);
-				 grupo.setClasificacion(clasificacion);
+				clasificacion = elementos.get(i + 1);
+				grupo.setClasificacion(clasificacion);
 			} else if (elementos.get(i).equals("ÁREA DE CONOCIMIENTO")) {
 				area = elementos.get(i + 1);
 				grupo.setAreaDeConocimiento(area);
@@ -286,7 +296,7 @@ public class GrupLac {
 	 * @param elementos
 	 *            arreglo que contiene los eventos
 	 */
-	public void extraerEventos(ArrayList<String> elementos,Grupo grupo) {
+	public void extraerEventos(ArrayList<String> elementos, Grupo grupo) {
 		String nombre = "";
 		String tipo = "";
 		String ambito = "";
@@ -299,8 +309,8 @@ public class GrupLac {
 			if (elementos.get(i).contains(".-")) {
 				tipo = elementos.get(i + 1);
 			}
-			if (elementos.get(i).contains(".-")) {
-				nombre = elementos.get(i + 2).substring(2);
+			if (elementos.get(i).startsWith(":")) {
+				nombre = elementos.get(i).substring(2);
 			}
 			if (elementos.get(i).contains("DESDE")) {
 				String cadena = elementos.get(i);
@@ -353,12 +363,15 @@ public class GrupLac {
 				for (int j = 0; j < aux.length; j++) {
 					if (aux[j] == 'N' && aux[j + 1] == ':') {
 						posI = j + 3;
+						
 						tipoParticipacion = cadena.substring(posI);
 						break;
 					}
 				}
 			}
 		}
+		System.err.println(nombre);
+		System.err.println(tipoParticipacion);
 		evento.setTipo(tipo);
 		evento.setNombre(nombre);
 		evento.setLugar(lugar);
@@ -367,7 +380,6 @@ public class GrupLac {
 		evento.setTipoParticipacion(tipoParticipacion);
 		auxEvento.add(evento);
 		grupo.setEventos(auxEvento);
-
 
 	}
 
@@ -378,12 +390,12 @@ public class GrupLac {
 	 *            arreglo que contiene lo articuos
 	 */
 	public void extraerArticulos(ArrayList<String> elementos, Grupo grupo) {
-		String autores ="";
-		String titulo="";
-		String lugar="";
-		String nomRevista="";
-		String anio="";
-		String tipo="";
+		String autores = "";
+		String titulo = "";
+		String lugar = "";
+		String nomRevista = "";
+		String anio = "";
+		String tipo = "";
 		ArrayList<Articulo> auxArticulos = new ArrayList<>();
 		Articulo articulo = new Articulo();
 		for (int i = 0; i < elementos.size(); i++) {
@@ -404,7 +416,7 @@ public class GrupLac {
 					}
 				}
 			}
-			
+
 			if (elementos.get(i).contains("ISSN")) {
 				String cadena = elementos.get(i);
 				char[] aux = cadena.toCharArray();
@@ -549,11 +561,11 @@ public class GrupLac {
 	// }
 
 	public void extraerLibros(ArrayList<String> elementos, Grupo grupo) {
-		String autores="";
-		String titulo="";
-		String lugar="";
-		String anio="";
-		String editorial="";
+		String autores = "";
+		String titulo = "";
+		String lugar = "";
+		String anio = "";
+		String editorial = "";
 		ArrayList<Libro> auxLib = new ArrayList<>();
 		Libro libro = new Libro();
 		for (int i = 0; i < elementos.size(); i++) {
@@ -628,9 +640,9 @@ public class GrupLac {
 	}
 
 	public void extraerProyectos(ArrayList<String> elementos, Grupo grupo) {
-		String tipo="";
-		String nombre="";
-		String fecha="";
+		String tipo = "";
+		String nombre = "";
+		String fecha = "";
 		ArrayList<Proyecto> auxPro = new ArrayList<>();
 		Proyecto proyecto = new Proyecto();
 		for (int i = 0; i < elementos.size(); i++) {
@@ -656,28 +668,29 @@ public class GrupLac {
 		grupo.setProyectos(auxPro);
 	}
 
-	public void extraerIntegrantes(ArrayList<String> elementos, Grupo grupo) {
-		String nombre;
-		ArrayList<String> aux = new ArrayList<>();
-		ArrayList<Investigador> auxInvestigador = new ArrayList<>();
-		Investigador investigador = new Investigador();
-		for (int i = 0; i < elementos.size(); i++) {
-			if(elementos.get(i).contains(".-")&&elementos.get(i+4).contains("ACTUAL")) {
-				nombre=elementos.get(i+1);
-				aux.add(nombre);
-			}
-		}
-		
+	// public void extraerIntegrantes(ArrayList<String> elementos, Grupo grupo) {
+	// String nombre;
+	// ArrayList<String> aux = new ArrayList<>();
+	// ArrayList<Investigador> auxInvestigador = new ArrayList<>();
+	// Investigador investigador = new Investigador();
+	// for (int i = 0; i < elementos.size(); i++) {
+	// if (elementos.get(i).contains(".-") && elementos.get(i +
+	// 4).contains("ACTUAL")) {
+	// nombre = elementos.get(i + 1);
+	// aux.add(nombre);
+	// }
+	// }
+	//
+	// }
 
-	}
 	public void leerDataSet() {
 		try {
 			urlSet = new ArrayList<String>();
 			String cadena;
-			FileReader f = new FileReader("src//main//java//datasets//DatasetCvLac.txt");
+			FileReader f = new FileReader("src//main//java//datasets//DatasetGrupLac.txt");
 			BufferedReader b = new BufferedReader(f);
 			while ((cadena = b.readLine()) != null) {
-				String url = "http://scienti.colciencias.gov.co:8081/cvlac/visualizador/generarCurriculoCv.do?cod_rh="
+				String url = "http://scienti.colciencias.gov.co:8085/gruplac/jsp/visualiza/visualizagr.jsp?nro="
 						+ cadena;
 				urlSet.add(url);
 			}
@@ -687,5 +700,98 @@ public class GrupLac {
 			ex.printStackTrace();
 
 		}
+	}
+
+	/**
+	 * Este metodo se encarga de hacer el llamado al metodo que lee un archivo plano
+	 * y carga el dataSet de url's, ademas, crea y lanza un pool de hilos para
+	 * mejorar el tiempo de ejecucion del programa
+	 */
+	public void scrapData() {
+
+		long startTime = System.currentTimeMillis();
+		long stopTime = 0;
+		long elapsedTime = 0;
+		leerDataSet();
+		ExecutorService executor = Executors.newFixedThreadPool(5);
+		for (int i = 0; i < urlSet.size(); i++) {
+			Runnable worker = new ArrayThread(urlSet.get(i), i, 1, null, this);
+			executor.execute(worker);
+		}
+		executor.shutdown();
+		while (!executor.isTerminated()) {
+			stopTime = System.currentTimeMillis();
+			elapsedTime = stopTime - startTime;
+
+		}
+
+		try {
+			Connection connection = DataSource.getInstance().getConnection();
+
+			Statement statement = connection.createStatement();
+
+			for (int i = 0; i < grupos.size(); i++) {
+				Grupo grupo = grupos.get(i);
+				String query = Constantes.INSERT_GRUP + "(" + grupo.getId() + ", '" + grupo.getNombre().toUpperCase()
+						+ "', '" + grupo.getAnioFundacion().toUpperCase() + "' , '"
+						+ grupo.getClasificacion().toUpperCase() + "' , '" + grupo.getLider().toUpperCase() + "' , '"
+						+ grupo.getAreaDeConocimiento().toUpperCase() + "')";
+				statement.executeQuery(query);
+
+				if (grupo.getArticulos() != null) {
+					ArrayList<Articulo> listaArticulos = grupo.getArticulos();
+
+					for (int j = 0; j < listaArticulos.size(); j++) {
+						Articulo a = listaArticulos.get(j);
+						String queryArticulos = Constantes.INSERT_GRUP_ART + "('" + a.getAutores() + "','"
+								+ a.getTitulo() + "','" + a.getNomRevista() + "','" + a.getLugar() + "','" + a.getAnio()
+								+ "','" + a.getTipo() + "'," + grupo.getId() + ")";
+						statement.executeQuery(queryArticulos);
+					}
+				}
+
+				if (grupo.getEventos() != null) {
+					ArrayList<EventoCientifico> listaEventos = grupo.getEventos();
+
+					for (int j = 0; j < listaEventos.size(); j++) {
+						EventoCientifico e = listaEventos.get(j);
+						String queryEventos = Constantes.INSERT_GRUP_EVT + "('" + e.getNombre() + "','" + e.getTipo()
+								+ "','" + e.getAmbito() + "','" + e.getLugar() + "','" + e.getFecha() + "','"
+								+ e.getTipoParticipacion() + "'," + grupo.getId() + ")";
+						statement.executeQuery(queryEventos);
+					}
+				}
+
+				if (grupo.getLibros() != null) {
+					ArrayList<Libro> listaLibros = grupo.getLibros();
+
+					for (int j = 0; j < listaLibros.size(); j++) {
+						Libro l = listaLibros.get(j);
+						String queryLibros = Constantes.INSERT_GRUP_LIB + "('" + l.getTitulo() + "','" + l.getAutores()
+								+ "','" + l.getLugar() + "','" + l.getAnio() + "','" + l.getEditorial() + "',"
+								+ grupo.getId() + ")";
+						statement.executeQuery(queryLibros);
+					}
+
+				}
+
+				if (grupo.getProyectos() != null) {
+					ArrayList<Proyecto> listaProyecto = grupo.getProyectos();
+
+					for (int j = 0; j < listaProyecto.size(); j++) {
+						Proyecto p = listaProyecto.get(j);
+						String queryProyectos = Constantes.INSERT_GRUP_PROY + "('" + p.getNombre() + "','" + p.getTipo()
+								+ "','" + p.getFecha() + "'," + grupo.getId() + ")";
+						statement.executeQuery(queryProyectos);
+					}
+				}
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		System.err.println(elapsedTime);
+
 	}
 }
