@@ -811,8 +811,10 @@ public class CvLac {
 		}
 	}
 
-	/**
-	 * 
-	 */
+	public List<Investigador> getInvestigadores() {
+		return investigadores;
+	}
+
+
 
 }

@@ -12,11 +12,13 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import org.jsoup.Connection.Response;
+import org.apache.commons.lang3.StringUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
+import co.edu.uniquindio.software3.proyecto.CvLacScraper.CvLac;
 import co.edu.uniquindio.software3.proyecto.CvLacScraper.Investigador;
 import co.edu.uniquindio.software3.proyecto.ResearchScraper.ArrayThread;
 import co.edu.uniquindio.software3.proyecto.ResearchScraper.Constantes;
@@ -152,10 +154,10 @@ public class GrupLac {
 
 			// Obtenemos el id del grupo a partir de la URL
 			String id = url.substring(81);
-			
-		
+
 			extraerDatos(limpiar(elemInformacion), limpiar(elemArticulos), limpiar(elemEventos), limpiar(elemInformes),
-					limpiar(elemInnovaciones), limpiar(elemLibros), limpiar(elemSoftwares),limpiar(elemProyectos), id);
+					limpiar(elemInnovaciones), limpiar(elemLibros), limpiar(elemSoftwares), limpiar(elemProyectos),
+					limpiar(elemIntegrantes), id);
 
 		} else {
 			System.out.println("El Status Code no es OK es: " + getStatusConnectionCode(url));
@@ -182,6 +184,7 @@ public class GrupLac {
 			temporal = temporal.replaceAll("&nbsp;", " ");
 			temporal = temporal.replaceAll("  ", " ");
 			temporal = temporal.replaceAll("&AMP", "&");
+			temporal = temporal.replaceAll("&AMP;", "&");
 			temporal = temporal.replaceAll("'", "");
 		}
 		char[] auxiliar = temporal.toCharArray();
@@ -228,24 +231,13 @@ public class GrupLac {
 		return elementosLimpio;
 	}
 
-	/**
-	 * 
-	 * @param datosBasicos
-	 * @param articulos
-	 * @param eventos
-	 * @param informes
-	 * @param innovaciones
-	 * @param libros
-	 * @param softwares
-	 * @param id
-	 */
 	public void extraerDatos(ArrayList<String> datosBasicos, ArrayList<String> articulos, ArrayList<String> eventos,
 			ArrayList<String> informes, ArrayList<String> innovaciones, ArrayList<String> libros,
-			ArrayList<String> softwares, ArrayList<String> proyectos, String id) {
+			ArrayList<String> softwares, ArrayList<String> proyectos, ArrayList<String> integrantes, String id) {
 		Grupo grupo = new Grupo();
-		try {			
+		try {
 			grupo.setId(Integer.parseInt(id));
-			
+			extraerIntegrantes(integrantes, grupo);
 			extraerInformacionBasica(datosBasicos, grupo);
 			extraerArticulos(articulos, grupo);
 			extraerEventos(eventos, grupo);
@@ -255,6 +247,18 @@ public class GrupLac {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+	}
+
+	public void extraerIntegrantes(ArrayList<String> elementos, Grupo grupo) {
+		String nombre;
+		ArrayList<String> auxIntegrantes = new ArrayList<>();
+		for (int i = 0; i < elementos.size(); i++) {
+			if (elementos.get(i).contains(".-") && elementos.get(i + 4).contains("ACTUAL")) {
+				nombre = elementos.get(i + 1);
+				auxIntegrantes.add(nombre);
+			}
+		}
+		grupo.setIntegrantes(auxIntegrantes);
 	}
 
 	/**
@@ -279,10 +283,10 @@ public class GrupLac {
 				grupo.setNombre(titulo);
 				grupo.setLider(lider);
 			} else if (elementos.get(i).equals("CLASIFICACIÓN")) {
-				if (elementos.get(i+1).equals("ÁREA DE CONOCIMIENTO")) {
-				clasificacion = "N/D";
-				}else {
-				clasificacion = elementos.get(i + 1);
+				if (elementos.get(i + 1).equals("ÁREA DE CONOCIMIENTO")) {
+					clasificacion = "N/D";
+				} else {
+					clasificacion = elementos.get(i + 1);
 				}
 				grupo.setClasificacion(clasificacion);
 			} else if (elementos.get(i).equals("ÁREA DE CONOCIMIENTO")) {
@@ -314,7 +318,8 @@ public class GrupLac {
 				tipo = elementos.get(i + 1);
 			}
 			if (elementos.get(i).startsWith(":")) {
-				nombre = elementos.get(i).substring(2).replaceAll("&AMP;", "&");
+				nombre = elementos.get(i).replaceAll("&AMP;", "&");
+				nombre = nombre.substring(2);
 			}
 			if (elementos.get(i).contains("DESDE") && elementos.get(i).contains("HASTA")) {
 				String cadena = elementos.get(i);
@@ -324,8 +329,8 @@ public class GrupLac {
 					if (aux[j] == ',') {
 						posF = j;
 						lugar = cadena.substring(0, posF);
-						if (lugar==null) {
-							lugar="N/D";
+						if (lugar == null) {
+							lugar = "N/D";
 						}
 						j = posF;
 						break;
@@ -358,9 +363,10 @@ public class GrupLac {
 					}
 					if (aux[j] == ',') {
 						posF = j;
-						ambito = cadena.substring(posI, posF);
-						if (ambito==null) {
-							ambito="N/D";
+						if (cadena.substring(posI, posF).equalsIgnoreCase("NULL")) {
+							ambito = "N/D";
+						} else {
+							ambito = cadena.substring(posI, posF);
 						}
 						break;
 					}
@@ -377,10 +383,10 @@ public class GrupLac {
 							tipoParticipacion = cadena.substring(posI);
 							break;
 						} catch (Exception e) {
-							tipoParticipacion= "N/D";
+							tipoParticipacion = "N/D";
 							break;
 						}
-						
+
 					}
 				}
 				evento.setNombre(nombre);
@@ -391,10 +397,9 @@ public class GrupLac {
 				evento.setTipoParticipacion(tipoParticipacion);
 				auxEvento.add(evento);
 				grupo.setEventos(auxEvento);
-				
+
 			}
-			
-			
+
 		}
 	}
 
@@ -412,36 +417,24 @@ public class GrupLac {
 		String anio = "";
 		String tipo = "";
 		ArrayList<Articulo> auxArticulos = new ArrayList<>();
-		
+
 		for (int i = 0; i < elementos.size(); i++) {
 			Articulo articulo = new Articulo();
 			if (elementos.get(i).contains(".-")) {
-				titulo = elementos.get(i + 2).replaceAll("&", "&");
-			}
-			if (elementos.get(i).contains(".-")) {
 				tipo = elementos.get(i + 1).replaceAll(":", "");
+				titulo = elementos.get(i + 2);
+				titulo = titulo.replaceAll("&AMP;", "&");
 			}
-			if (elementos.get(i).contains("AUTORES:")) {
-				String cadena = elementos.get(i);
-				int posI = 0;
-				char[] aux = cadena.toCharArray();
-				for (int j = 0; j < aux.length; j++) {
-					if (aux[j] == ':') {
-						posI = j + 2;
-						autores = cadena.substring(posI,aux.length-1);
-						break;
-					}
-				}
-			}
-
 			if (elementos.get(i).contains("ISSN:")) {
 				String cadena = elementos.get(i);
 				char[] aux = cadena.toCharArray();
 				for (int j = 0; j < aux.length; j++) {
 					if (aux[j] == ',') {
-						lugar = cadena.substring(0, j);
-						if (lugar==null) {
-							lugar="N/D";
+
+						if (j == 0) {
+							lugar = "N/D";
+						} else {
+							lugar = cadena.substring(0, j);
 						}
 						break;
 					}
@@ -463,11 +456,10 @@ public class GrupLac {
 							nomRevista = cadena.substring(posI, posF);
 							break;
 						} catch (Exception e) {
-							nomRevista="N/D";
+							nomRevista = "N/D";
 							break;
 						}
-						
-						
+
 					}
 				}
 
@@ -484,22 +476,34 @@ public class GrupLac {
 					if (aux[j] == 'V' && aux[j + 1] == 'O' && aux[j + 2] == 'L') {
 						posF = j - 1;
 						anio = cadena.substring(posI, posF);
-						articulo.setAnio(anio);
-						articulo.setAutores(autores);
-						articulo.setLugar(lugar);
-						articulo.setNomRevista(nomRevista);
-						articulo.setTipo(tipo);
-						articulo.setTitulo(titulo);
-						auxArticulos.add(articulo);
-						grupo.setArticulos(auxArticulos);
 						break;
 					}
 				}
-				
 
 			}
+			if (elementos.get(i).contains("AUTORES:")) {
+				String cadena = elementos.get(i);
+				int posI = 0;
+				char[] aux = cadena.toCharArray();
+				for (int j = 0; j < aux.length; j++) {
+					if (aux[j] == ':') {
+						posI = j + 2;
+						autores = cadena.substring(posI, aux.length - 1);
+						break;
+
+					}
+				}
+				articulo.setAnio(anio);
+				articulo.setAutores(autores);
+				articulo.setLugar(lugar);
+				articulo.setNomRevista(nomRevista);
+				articulo.setTipo(tipo);
+				articulo.setTitulo(titulo);
+				auxArticulos.add(articulo);
+				grupo.setArticulos(auxArticulos);
+			}
 		}
-		
+
 	}
 
 	/**
@@ -593,7 +597,7 @@ public class GrupLac {
 		String anio = "";
 		String editorial = "";
 		ArrayList<Libro> auxLib = new ArrayList<>();
-		
+
 		for (int i = 0; i < elementos.size(); i++) {
 			Libro libro = new Libro();
 			if (elementos.get(i).contains(".-")) {
@@ -651,7 +655,7 @@ public class GrupLac {
 				for (int j = 0; j < aux.length; j++) {
 					if (aux[j] == 'E' && aux[j + 1] == 'S' && aux[j + 2] == ':') {
 						posI = j + 4;
-						autores = cadena.substring(posI,aux.length-1);
+						autores = cadena.substring(posI, aux.length - 1);
 						libro.setAnio(anio);
 						libro.setAutores(autores);
 						libro.setEditorial(editorial);
@@ -664,7 +668,7 @@ public class GrupLac {
 				}
 			}
 		}
-		
+
 	}
 
 	public void extraerProyectos(ArrayList<String> elementos, Grupo grupo) {
@@ -672,7 +676,7 @@ public class GrupLac {
 		String nombre = "";
 		String fecha = "";
 		ArrayList<Proyecto> auxPro = new ArrayList<>();
-		
+
 		for (int i = 0; i < elementos.size(); i++) {
 			Proyecto proyecto = new Proyecto();
 			if (elementos.get(i).contains(".-")) {
@@ -695,7 +699,7 @@ public class GrupLac {
 			}
 
 		}
-		
+
 	}
 
 	// public void extraerIntegrantes(ArrayList<String> elementos, Grupo grupo) {
@@ -759,7 +763,8 @@ public class GrupLac {
 			Connection connection = DataSource.getInstance().getConnection();
 
 			Statement statement = connection.createStatement();
-
+			CvLac cvLac = new CvLac();
+			cvLac.scrapData();
 			for (int i = 0; i < grupos.size(); i++) {
 				Grupo grupo = grupos.get(i);
 				String query = Constantes.INSERT_GRUP + "(" + grupo.getId() + ", '" + grupo.getNombre().toUpperCase()
@@ -767,6 +772,24 @@ public class GrupLac {
 						+ grupo.getClasificacion().toUpperCase() + "' , '" + grupo.getLider().toUpperCase() + "' , '"
 						+ grupo.getAreaDeConocimiento().toUpperCase() + "')";
 				statement.executeQuery(query);
+
+				if (grupo.getIntegrantes() != null) {
+					ArrayList<String> listaIntegrantes = grupo.getIntegrantes();
+					List<Investigador> listaInvestigadores = cvLac.getInvestigadores();
+					for (int j = 0; j < listaIntegrantes.size(); j++) {
+						for (int k = 0; k < listaInvestigadores.size(); k++) {
+							String auxIntegrante = StringUtils.stripAccents(listaIntegrantes.get(j));
+							String auxInvestigador = StringUtils
+									.stripAccents(listaInvestigadores.get(k).getNombre());
+							if (auxIntegrante.equalsIgnoreCase(auxInvestigador)) {
+								String queryIntermedia = "insert into grup_inves (grupos_id, investigadores_id) values ("
+										+ grupo.getId() + "," + listaInvestigadores.get(k).getId() + ")";
+								statement.executeQuery(queryIntermedia);
+							}
+						}
+
+					}
+				}
 
 				if (grupo.getArticulos() != null) {
 					ArrayList<Articulo> listaArticulos = grupo.getArticulos();

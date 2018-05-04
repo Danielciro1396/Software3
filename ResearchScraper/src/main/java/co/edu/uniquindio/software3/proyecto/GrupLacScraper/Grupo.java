@@ -11,14 +11,14 @@ public class Grupo {
 	private String lider;
 	private String clasificacion;
 	private String areaDeConocimiento;
-	private ArrayList<Investigador> integrantes;
+	private ArrayList<String> integrantes;
 	private ArrayList<Articulo> articulos;
 	private ArrayList<EventoCientifico> eventos;
 	private ArrayList<Libro> libros;
 	private ArrayList<Proyecto> proyectos;
 
 	public Grupo(int id, String nombre, String anioFundacion, String lider, String clasificacion, String areaDeConocimiento,
-			ArrayList<Investigador> integrantes,ArrayList<Articulo> articulos, ArrayList<EventoCientifico> eventos, ArrayList<Libro> libros,
+			ArrayList<String> integrantes,ArrayList<Articulo> articulos, ArrayList<EventoCientifico> eventos, ArrayList<Libro> libros,
 			ArrayList<Proyecto> proyectos) {
 		this.id = id;
 		this.nombre = nombre;
@@ -118,11 +118,11 @@ public class Grupo {
 		this.proyectos = proyectos;
 	}
 
-	public ArrayList<Investigador> getIntegrantes() {
+	public ArrayList<String> getIntegrantes() {
 		return integrantes;
 	}
 
-	public void setIntegrantes(ArrayList<Investigador> integrantes) {
+	public void setIntegrantes(ArrayList<String> integrantes) {
 		this.integrantes = integrantes;
 	}
 	
