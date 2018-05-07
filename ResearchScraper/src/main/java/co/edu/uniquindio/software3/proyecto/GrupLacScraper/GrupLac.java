@@ -28,7 +28,7 @@ public class GrupLac {
 
 	ArrayList<String> urlSet;
 
-	String titulo;
+	
 
 	List<Grupo> grupos = Collections.synchronizedList(new ArrayList<Grupo>());
 
@@ -84,6 +84,7 @@ public class GrupLac {
 	public void extraer(String url) {
 
 		if (getStatusConnectionCode(url) == 200) {
+			String titulo = "";
 			ArrayList<String> elemInformacion = new ArrayList<>();
 
 			ArrayList<String> elemEventos = new ArrayList<>();
@@ -112,7 +113,8 @@ public class GrupLac {
 
 			for (Element elem : entradas2) {
 				if (elem.toString().contains("span class")) {
-					titulo = elem.text();
+					 titulo = elem.text();
+					
 				}
 			}
 
@@ -157,7 +159,7 @@ public class GrupLac {
 
 			extraerDatos(limpiar(elemInformacion), limpiar(elemArticulos), limpiar(elemEventos), limpiar(elemInformes),
 					limpiar(elemInnovaciones), limpiar(elemLibros), limpiar(elemSoftwares), limpiar(elemProyectos),
-					limpiar(elemIntegrantes), id);
+					limpiar(elemIntegrantes), titulo, id);
 
 		} else {
 			System.out.println("El Status Code no es OK es: " + getStatusConnectionCode(url));
@@ -233,10 +235,11 @@ public class GrupLac {
 
 	public void extraerDatos(ArrayList<String> datosBasicos, ArrayList<String> articulos, ArrayList<String> eventos,
 			ArrayList<String> informes, ArrayList<String> innovaciones, ArrayList<String> libros,
-			ArrayList<String> softwares, ArrayList<String> proyectos, ArrayList<String> integrantes, String id) {
+			ArrayList<String> softwares, ArrayList<String> proyectos, ArrayList<String> integrantes, String titulo, String id) {
 		Grupo grupo = new Grupo();
 		try {
 			grupo.setId(Integer.parseInt(id));
+			grupo.setNombre(titulo);
 			extraerIntegrantes(integrantes, grupo);
 			extraerInformacionBasica(datosBasicos, grupo);
 			extraerArticulos(articulos, grupo);
@@ -254,6 +257,10 @@ public class GrupLac {
 		ArrayList<String> auxIntegrantes = new ArrayList<>();
 		for (int i = 0; i < elementos.size(); i++) {
 			if (elementos.get(i).contains(".-") && elementos.get(i + 4).contains("ACTUAL")) {
+				
+				nombre = elementos.get(i + 1);
+				auxIntegrantes.add(nombre);
+			} else if(elementos.get(i).contains(".-") && elementos.get(i + 3).contains("ACTUAL")){
 				nombre = elementos.get(i + 1);
 				auxIntegrantes.add(nombre);
 			}
@@ -280,7 +287,7 @@ public class GrupLac {
 				grupo.setAnioFundacion(anio);
 			} else if (elementos.get(i).equals("LÍDER")) {
 				lider = elementos.get(i + 1);
-				grupo.setNombre(titulo);
+				
 				grupo.setLider(lider);
 			} else if (elementos.get(i).equals("CLASIFICACIÓN")) {
 				if (elementos.get(i + 1).equals("ÁREA DE CONOCIMIENTO")) {
@@ -689,7 +696,8 @@ public class GrupLac {
 				if (elementos.get(i + 3).contains(".-")) {
 					fecha = "N/D";
 				} else {
-					fecha = elementos.get(i + 3);
+					String aux = elementos.get(i + 3);
+					fecha = aux.substring(0,4);
 				}
 				proyecto.setFecha(fecha);
 				proyecto.setNombre(nombre);
@@ -782,6 +790,10 @@ public class GrupLac {
 							String auxInvestigador = StringUtils
 									.stripAccents(listaInvestigadores.get(k).getNombre());
 							if (auxIntegrante.equalsIgnoreCase(auxInvestigador)) {
+								String queryIntermedia = "insert into grup_inves (grupos_id, investigadores_id) values ("
+										+ grupo.getId() + "," + listaInvestigadores.get(k).getId() + ")";
+								statement.executeQuery(queryIntermedia);
+							}else if (auxInvestigador.contains(auxIntegrante)){
 								String queryIntermedia = "insert into grup_inves (grupos_id, investigadores_id) values ("
 										+ grupo.getId() + "," + listaInvestigadores.get(k).getId() + ")";
 								statement.executeQuery(queryIntermedia);

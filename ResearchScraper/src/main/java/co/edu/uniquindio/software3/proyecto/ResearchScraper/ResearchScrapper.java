@@ -13,6 +13,11 @@ public class ResearchScrapper {
 //		Orcid o = new Orcid();
 
 		grp.scrapData();
+		
+		
+		//grp.extraer("http://scienti.colciencias.gov.co:8085/gruplac/jsp/visualiza/visualizagr.jsp?nro=00000000016984");
+		//grp.extraer("http://scienti.colciencias.gov.co:8085/gruplac/jsp/visualiza/visualizagr.jsp?nro=00000000009219");
+	
 
 	
 		
