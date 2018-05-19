@@ -8,9 +8,10 @@ public class EventoCientifico {
 	private String fecha;
 	private String lugar;
 	private String tipoParticipacion;
+	private String repetido;
 	
 	public EventoCientifico(int id, String nombre, String tipo, String ambito, String fecha, String lugar,
-			String tipoParticipacion) {
+			String tipoParticipacion, String repetido) {
 		super();
 		this.id = id;
 		this.nombre = nombre;
@@ -19,6 +20,7 @@ public class EventoCientifico {
 		this.fecha = fecha;
 		this.lugar = lugar;
 		this.tipoParticipacion = tipoParticipacion;
+		this.repetido = repetido;
 	}
 
 	public EventoCientifico() {
@@ -79,6 +81,14 @@ public class EventoCientifico {
 
 	public void setTipoParticipacion(String tipoParticipacion) {
 		this.tipoParticipacion = tipoParticipacion;
+	}
+
+	public String getRepetido() {
+		return repetido;
+	}
+
+	public void setRepetido(String repetido) {
+		this.repetido = repetido;
 	}
 	
 	

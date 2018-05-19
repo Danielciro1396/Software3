@@ -317,6 +317,7 @@ public class GrupLac {
 		String fecha = "";
 		String lugar = "";
 		String tipoParticipacion = "";
+		String repetido="NO";
 		ArrayList<EventoCientifico> auxEvento = new ArrayList<>();
 
 		for (int i = 0; i < elementos.size(); i++) {
@@ -402,6 +403,22 @@ public class GrupLac {
 				evento.setFecha(fecha);
 				evento.setAmbito(ambito);
 				evento.setTipoParticipacion(tipoParticipacion);
+				String auxiliar=limpiarCadena(nombre);
+				boolean estaRepetido = false;
+				for (int j = 0; j < auxEvento.size(); j++) {
+					String auxiliar2=limpiarCadena(auxEvento.get(j).getNombre());
+					if (auxiliar.startsWith(auxiliar2)||auxiliar2.startsWith(auxiliar)) {
+						auxEvento.get(j).setRepetido("SI");
+						estaRepetido=true;
+						break;
+					}
+				}
+				if (estaRepetido) {
+					repetido="SI";
+				}else {
+					repetido="NO";
+				}
+				evento.setRepetido(repetido);
 				auxEvento.add(evento);
 				grupo.setEventos(auxEvento);
 
@@ -423,6 +440,7 @@ public class GrupLac {
 		String nomRevista = "";
 		String anio = "";
 		String tipo = "";
+		String repetido="NO";
 		ArrayList<Articulo> auxArticulos = new ArrayList<>();
 
 		for (int i = 0; i < elementos.size(); i++) {
@@ -506,6 +524,22 @@ public class GrupLac {
 				articulo.setNomRevista(nomRevista);
 				articulo.setTipo(tipo);
 				articulo.setTitulo(titulo);
+				String auxiliar=limpiarCadena(titulo);
+				boolean estaRepetido = false;
+				for (int j = 0; j < auxArticulos.size(); j++) {
+					String auxiliar2=limpiarCadena(auxArticulos.get(j).getTitulo());
+					if (auxiliar.startsWith(auxiliar2)||auxiliar2.startsWith(auxiliar)) {
+						auxArticulos.get(j).setRepetido("SI");
+						estaRepetido=true;
+						break;
+					}
+				}
+				if (estaRepetido) {
+					repetido="SI";
+				}else {
+					repetido="NO";
+				}
+				articulo.setRepetido(repetido);
 				auxArticulos.add(articulo);
 				grupo.setArticulos(auxArticulos);
 			}
@@ -603,6 +637,7 @@ public class GrupLac {
 		String lugar = "";
 		String anio = "";
 		String editorial = "";
+		String repetido= "NO";
 		ArrayList<Libro> auxLib = new ArrayList<>();
 
 		for (int i = 0; i < elementos.size(); i++) {
@@ -668,6 +703,22 @@ public class GrupLac {
 						libro.setEditorial(editorial);
 						libro.setLugar(lugar);
 						libro.setTitulo(titulo);
+						String auxiliar=limpiarCadena(titulo);
+						boolean estaRepetido = false;
+						for (int k = 0; k < auxLib.size(); k++) {
+							String auxiliar2=limpiarCadena(auxLib.get(k).getTitulo());
+							if (auxiliar.startsWith(auxiliar2)||auxiliar2.startsWith(auxiliar)) {
+								auxLib.get(k).setRepetido("SI");
+								estaRepetido=true;
+								break;
+							}
+						}
+						if (estaRepetido) {
+							repetido="SI";
+						}else {
+							repetido="NO";
+						}
+						libro.setRepetido(repetido);
 						auxLib.add(libro);
 						grupo.setLibros(auxLib);
 						break;
@@ -682,6 +733,7 @@ public class GrupLac {
 		String tipo = "";
 		String nombre = "";
 		String fecha = "";
+		String repetido= "NO";
 		ArrayList<Proyecto> auxPro = new ArrayList<>();
 
 		for (int i = 0; i < elementos.size(); i++) {
@@ -702,6 +754,22 @@ public class GrupLac {
 				proyecto.setFecha(fecha);
 				proyecto.setNombre(nombre);
 				proyecto.setTipo(tipo);
+				String auxiliar=limpiarCadena(nombre);
+				boolean estaRepetido = false;
+				for (int j = 0; j < auxPro.size(); j++) {
+					String auxiliar2=limpiarCadena(auxPro.get(j).getNombre());
+					if (auxiliar.startsWith(auxiliar2)||auxiliar2.startsWith(auxiliar)) {
+						auxPro.get(j).setRepetido("SI");
+						estaRepetido=true;
+						break;
+					}
+				}
+				if (estaRepetido) {
+					repetido="SI";
+				}else {
+					repetido="NO";
+				}
+				proyecto.setRepetido(repetido);
 				auxPro.add(proyecto);
 				grupo.setProyectos(auxPro);
 			}
@@ -709,21 +777,6 @@ public class GrupLac {
 		}
 
 	}
-
-	// public void extraerIntegrantes(ArrayList<String> elementos, Grupo grupo) {
-	// String nombre;
-	// ArrayList<String> aux = new ArrayList<>();
-	// ArrayList<Investigador> auxInvestigador = new ArrayList<>();
-	// Investigador investigador = new Investigador();
-	// for (int i = 0; i < elementos.size(); i++) {
-	// if (elementos.get(i).contains(".-") && elementos.get(i +
-	// 4).contains("ACTUAL")) {
-	// nombre = elementos.get(i + 1);
-	// aux.add(nombre);
-	// }
-	// }
-	//
-	// }
 
 	public void leerDataSet() {
 		try {
@@ -810,7 +863,7 @@ public class GrupLac {
 						Articulo a = listaArticulos.get(j);
 						String queryArticulos = Constantes.INSERT_GRUP_ART + "('" + a.getAutores() + "','"
 								+ a.getTitulo() + "','" + a.getNomRevista() + "','" + a.getLugar() + "','" + a.getAnio()
-								+ "','" + a.getTipo() + "'," + grupo.getId() + ")";
+								+ "','" + a.getTipo() + "'," + grupo.getId()+ ",'" + a.getRepetido()+ "')";
 						statement.executeQuery(queryArticulos);
 					}
 				}
@@ -822,7 +875,7 @@ public class GrupLac {
 						EventoCientifico e = listaEventos.get(j);
 						String queryEventos = Constantes.INSERT_GRUP_EVT + "('" + e.getNombre() + "','" + e.getTipo()
 								+ "','" + e.getAmbito() + "','" + e.getLugar() + "','" + e.getFecha() + "','"
-								+ e.getTipoParticipacion() + "'," + grupo.getId() + ")";
+								+ e.getTipoParticipacion() + "'," + grupo.getId()+ ",'" + e.getRepetido()+ "')";
 						statement.executeQuery(queryEventos);
 					}
 				}
@@ -834,7 +887,7 @@ public class GrupLac {
 						Libro l = listaLibros.get(j);
 						String queryLibros = Constantes.INSERT_GRUP_LIB + "('" + l.getTitulo() + "','" + l.getAutores()
 								+ "','" + l.getLugar() + "','" + l.getAnio() + "','" + l.getEditorial() + "',"
-								+ grupo.getId() + ")";
+								+ grupo.getId()+ ",'" +l.getRepetido() + "')";
 						statement.executeQuery(queryLibros);
 					}
 
@@ -846,7 +899,7 @@ public class GrupLac {
 					for (int j = 0; j < listaProyecto.size(); j++) {
 						Proyecto p = listaProyecto.get(j);
 						String queryProyectos = Constantes.INSERT_GRUP_PROY + "('" + p.getNombre() + "','" + p.getTipo()
-								+ "','" + p.getFecha() + "'," + grupo.getId() + ")";
+								+ "','" + p.getFecha() + "'," + grupo.getId()+ ",'" +p.getRepetido() + "')";
 						statement.executeQuery(queryProyectos);
 					}
 				}
@@ -859,4 +912,21 @@ public class GrupLac {
 		System.err.println(elapsedTime);
 
 	}
+	
+	public String limpiarCadena(String cadena) {
+		String aux=cadena;
+		aux=aux.replaceAll(" ", "");
+		aux=aux.replaceAll("&", "Y");
+		aux=aux.replaceAll(":", "");
+		aux=aux.replaceAll(",", "");
+		aux=aux.replaceAll("-", "");
+		aux=aux.replaceAll(";", "");
+		aux=aux.replaceAll("¿", "");
+		aux=aux.replaceAll("¡", "");
+		aux=aux.replaceAll("!", "");
+		String auxiliar=StringUtils.stripAccents(aux);
+		
+		return auxiliar;
+	}
+	
 }

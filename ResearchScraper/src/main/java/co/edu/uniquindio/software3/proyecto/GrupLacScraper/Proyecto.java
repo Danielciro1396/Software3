@@ -6,13 +6,15 @@ public class Proyecto {
 	private String tipo;
 	private String nombre;
 	private String fecha;
+	private String repetido;
 	
-	public Proyecto(int id, String tipo, String nombre, String fecha) {
+	public Proyecto(int id, String tipo, String nombre, String fecha, String repetido) {
 		super();
 		this.id = id;
 		this.tipo = tipo;
 		this.nombre = nombre;
 		this.fecha = fecha;
+		this.repetido = repetido;
 	}
 
 	public Proyecto() {
@@ -50,6 +52,12 @@ public class Proyecto {
 	public void setFecha(String fecha) {
 		this.fecha = fecha;
 	}
-	
+	public String getRepetido() {
+		return repetido;
+	}
+
+	public void setRepetido(String repetido) {
+		this.repetido = repetido;
+	}
 	
 }
