@@ -240,7 +240,9 @@ public class GrupLac {
 		try {
 			grupo.setId(Integer.parseInt(id));
 			grupo.setNombre(titulo);
+			System.out.println(titulo);
 			extraerIntegrantes(integrantes, grupo);
+			
 			extraerInformacionBasica(datosBasicos, grupo);
 			extraerArticulos(articulos, grupo);
 			extraerEventos(eventos, grupo);
@@ -253,14 +255,14 @@ public class GrupLac {
 	}
 
 	public void extraerIntegrantes(ArrayList<String> elementos, Grupo grupo) {
-		String nombre;
+		String nombre="";
 		ArrayList<String> auxIntegrantes = new ArrayList<>();
 		for (int i = 0; i < elementos.size(); i++) {
-			if (elementos.get(i).contains(".-") && elementos.get(i + 4).contains("ACTUAL")) {
+			if (elementos.get(i).contains(".-") && elementos.get(i + 3).contains("ACTUAL")) {
 				
 				nombre = elementos.get(i + 1);
 				auxIntegrantes.add(nombre);
-			} else if(elementos.get(i).contains(".-") && elementos.get(i + 3).contains("ACTUAL")){
+			} else if(elementos.get(i).contains(".-") && elementos.get(i + 4).contains("ACTUAL")){
 				nombre = elementos.get(i + 1);
 				auxIntegrantes.add(nombre);
 			}
@@ -498,7 +500,7 @@ public class GrupLac {
 					if (aux[j] == ',') {
 						posI = j + 2;
 					}
-					if (aux[j] == 'V' && aux[j + 1] == 'O' && aux[j + 2] == 'L') {
+					if (aux[j] == 'V' && aux[j + 1] == 'O' && aux[j + 2] == 'L'&& aux[j + 3] == ':') {
 						posF = j - 1;
 						anio = cadena.substring(posI, posF);
 						break;
@@ -681,14 +683,19 @@ public class GrupLac {
 				int posI = 0;
 				String cadena = elementos.get(i);
 				char[] aux = cadena.toCharArray();
-				for (int j = 0; j < aux.length; j++) {
-					if (aux[j] == 'E' && aux[j + 1] == 'D' && aux[j + 2] == '.') {
-						posI = j + 4;
-						editorial = cadena.substring(posI);
-						break;
+				try{
+					for (int j = 0; j < aux.length; j++) {
+						if (aux[j] == 'E' && aux[j + 1] == 'D' && aux[j + 2] == '.') {
+							posI = j + 4;
+							editorial = cadena.substring(posI);
+							break;
+						}
 					}
-				}
 
+				}catch (Exception e) {
+					editorial="N/D";
+				}
+				
 			}
 			if (elementos.get(i).contains("AUTORES:")) {
 				int posI = 0;
