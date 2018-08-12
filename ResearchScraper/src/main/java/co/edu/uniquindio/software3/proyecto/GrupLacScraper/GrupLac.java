@@ -28,15 +28,13 @@ public class GrupLac {
 
 	ArrayList<String> urlSet;
 
-	
-
 	List<Grupo> grupos = Collections.synchronizedList(new ArrayList<Grupo>());
 
 	/**
-	 * Método provisto por JSoup para comprobar el Status code de la respuesta que
-	 * recibo al hacer la petición Codigos: 200 OK 300 Multiple Choices 301 Moved
-	 * Permanently 305 Use Proxy 400 Bad Request 403 Forbidden 404 Not Found 500
-	 * Internal Server Error 502 Bad Gateway 503 Service Unavailable
+	 * Método provisto por JSoup para comprobar el Status code de la respuesta
+	 * que recibo al hacer la petición Codigos: 200 OK 300 Multiple Choices 301
+	 * Moved Permanently 305 Use Proxy 400 Bad Request 403 Forbidden 404 Not
+	 * Found 500 Internal Server Error 502 Bad Gateway 503 Service Unavailable
 	 * 
 	 * @param url,
 	 *            el enlace de la página web a analizar.
@@ -55,8 +53,8 @@ public class GrupLac {
 	}
 
 	/**
-	 * Método que retorna un objeto de la clase Document con el contenido del HTML
-	 * de la web para poder ser parseado posteriormente con JSoup
+	 * Método que retorna un objeto de la clase Document con el contenido del
+	 * HTML de la web para poder ser parseado posteriormente con JSoup
 	 * 
 	 * @param url,
 	 *            el enlace de la página web a analizar.
@@ -74,9 +72,9 @@ public class GrupLac {
 	}
 
 	/**
-	 * Metodo que realiza la extraccion de la estructura de una pagina web, separa
-	 * en las diferentas categorias la estructura de la pagina web y hacer el
-	 * llamado al metodo que asigna los datos a cada grupo
+	 * Metodo que realiza la extraccion de la estructura de una pagina web,
+	 * separa en las diferentas categorias la estructura de la pagina web y
+	 * hacer el llamado al metodo que asigna los datos a cada grupo
 	 * 
 	 * @param url,
 	 *            direccion url de un investigador
@@ -113,8 +111,8 @@ public class GrupLac {
 
 			for (Element elem : entradas2) {
 				if (elem.toString().contains("span class")) {
-					 titulo = elem.text();
-					
+					titulo = elem.text();
+
 				}
 			}
 
@@ -235,14 +233,14 @@ public class GrupLac {
 
 	public void extraerDatos(ArrayList<String> datosBasicos, ArrayList<String> articulos, ArrayList<String> eventos,
 			ArrayList<String> informes, ArrayList<String> innovaciones, ArrayList<String> libros,
-			ArrayList<String> softwares, ArrayList<String> proyectos, ArrayList<String> integrantes, String titulo, String id) {
+			ArrayList<String> softwares, ArrayList<String> proyectos, ArrayList<String> integrantes, String titulo,
+			String id) {
 		Grupo grupo = new Grupo();
 		try {
 			grupo.setId(Integer.parseInt(id));
 			grupo.setNombre(titulo);
-			System.out.println(titulo);
 			extraerIntegrantes(integrantes, grupo);
-			
+
 			extraerInformacionBasica(datosBasicos, grupo);
 			extraerArticulos(articulos, grupo);
 			extraerEventos(eventos, grupo);
@@ -255,14 +253,14 @@ public class GrupLac {
 	}
 
 	public void extraerIntegrantes(ArrayList<String> elementos, Grupo grupo) {
-		String nombre="";
+		String nombre = "";
 		ArrayList<String> auxIntegrantes = new ArrayList<>();
 		for (int i = 0; i < elementos.size(); i++) {
 			if (elementos.get(i).contains(".-") && elementos.get(i + 3).contains("ACTUAL")) {
-				
+
 				nombre = elementos.get(i + 1);
 				auxIntegrantes.add(nombre);
-			} else if(elementos.get(i).contains(".-") && elementos.get(i + 4).contains("ACTUAL")){
+			} else if (elementos.get(i).contains(".-") && elementos.get(i + 4).contains("ACTUAL")) {
 				nombre = elementos.get(i + 1);
 				auxIntegrantes.add(nombre);
 			}
@@ -289,7 +287,7 @@ public class GrupLac {
 				grupo.setAnioFundacion(anio);
 			} else if (elementos.get(i).equals("LÍDER")) {
 				lider = elementos.get(i + 1);
-				
+
 				grupo.setLider(lider);
 			} else if (elementos.get(i).equals("CLASIFICACIÓN")) {
 				if (elementos.get(i + 1).equals("ÁREA DE CONOCIMIENTO")) {
@@ -319,7 +317,7 @@ public class GrupLac {
 		String fecha = "";
 		String lugar = "";
 		String tipoParticipacion = "";
-		String repetido="NO";
+		String repetido = "NO";
 		ArrayList<EventoCientifico> auxEvento = new ArrayList<>();
 
 		for (int i = 0; i < elementos.size(); i++) {
@@ -405,20 +403,20 @@ public class GrupLac {
 				evento.setFecha(fecha);
 				evento.setAmbito(ambito);
 				evento.setTipoParticipacion(tipoParticipacion);
-				String auxiliar=limpiarCadena(nombre);
+				String auxiliar = limpiarCadena(nombre);
 				boolean estaRepetido = false;
 				for (int j = 0; j < auxEvento.size(); j++) {
-					String auxiliar2=limpiarCadena(auxEvento.get(j).getNombre());
-					if (auxiliar.startsWith(auxiliar2)||auxiliar2.startsWith(auxiliar)) {
+					String auxiliar2 = limpiarCadena(auxEvento.get(j).getNombre());
+					if (auxiliar.startsWith(auxiliar2) || auxiliar2.startsWith(auxiliar)) {
 						auxEvento.get(j).setRepetido("SI");
-						estaRepetido=true;
+						estaRepetido = true;
 						break;
 					}
 				}
 				if (estaRepetido) {
-					repetido="SI";
-				}else {
-					repetido="NO";
+					repetido = "SI";
+				} else {
+					repetido = "NO";
 				}
 				evento.setRepetido(repetido);
 				auxEvento.add(evento);
@@ -442,7 +440,7 @@ public class GrupLac {
 		String nomRevista = "";
 		String anio = "";
 		String tipo = "";
-		String repetido="NO";
+		String repetido = "NO";
 		ArrayList<Articulo> auxArticulos = new ArrayList<>();
 
 		for (int i = 0; i < elementos.size(); i++) {
@@ -500,7 +498,7 @@ public class GrupLac {
 					if (aux[j] == ',') {
 						posI = j + 2;
 					}
-					if (aux[j] == 'V' && aux[j + 1] == 'O' && aux[j + 2] == 'L'&& aux[j + 3] == ':') {
+					if (aux[j] == 'V' && aux[j + 1] == 'O' && aux[j + 2] == 'L' && aux[j + 3] == ':') {
 						posF = j - 1;
 						anio = cadena.substring(posI, posF);
 						break;
@@ -526,20 +524,20 @@ public class GrupLac {
 				articulo.setNomRevista(nomRevista);
 				articulo.setTipo(tipo);
 				articulo.setTitulo(titulo);
-				String auxiliar=limpiarCadena(titulo);
+				String auxiliar = limpiarCadena(titulo);
 				boolean estaRepetido = false;
 				for (int j = 0; j < auxArticulos.size(); j++) {
-					String auxiliar2=limpiarCadena(auxArticulos.get(j).getTitulo());
-					if (auxiliar.startsWith(auxiliar2)||auxiliar2.startsWith(auxiliar)) {
+					String auxiliar2 = limpiarCadena(auxArticulos.get(j).getTitulo());
+					if (auxiliar.startsWith(auxiliar2) || auxiliar2.startsWith(auxiliar)) {
 						auxArticulos.get(j).setRepetido("SI");
-						estaRepetido=true;
+						estaRepetido = true;
 						break;
 					}
 				}
 				if (estaRepetido) {
-					repetido="SI";
-				}else {
-					repetido="NO";
+					repetido = "SI";
+				} else {
+					repetido = "NO";
 				}
 				articulo.setRepetido(repetido);
 				auxArticulos.add(articulo);
@@ -639,7 +637,7 @@ public class GrupLac {
 		String lugar = "";
 		String anio = "";
 		String editorial = "";
-		String repetido= "NO";
+		String repetido = "NO";
 		ArrayList<Libro> auxLib = new ArrayList<>();
 
 		for (int i = 0; i < elementos.size(); i++) {
@@ -683,7 +681,7 @@ public class GrupLac {
 				int posI = 0;
 				String cadena = elementos.get(i);
 				char[] aux = cadena.toCharArray();
-				try{
+				try {
 					for (int j = 0; j < aux.length; j++) {
 						if (aux[j] == 'E' && aux[j + 1] == 'D' && aux[j + 2] == '.') {
 							posI = j + 4;
@@ -692,10 +690,10 @@ public class GrupLac {
 						}
 					}
 
-				}catch (Exception e) {
-					editorial="N/D";
+				} catch (Exception e) {
+					editorial = "N/D";
 				}
-				
+
 			}
 			if (elementos.get(i).contains("AUTORES:")) {
 				int posI = 0;
@@ -710,20 +708,20 @@ public class GrupLac {
 						libro.setEditorial(editorial);
 						libro.setLugar(lugar);
 						libro.setTitulo(titulo);
-						String auxiliar=limpiarCadena(titulo);
+						String auxiliar = limpiarCadena(titulo);
 						boolean estaRepetido = false;
 						for (int k = 0; k < auxLib.size(); k++) {
-							String auxiliar2=limpiarCadena(auxLib.get(k).getTitulo());
-							if (auxiliar.startsWith(auxiliar2)||auxiliar2.startsWith(auxiliar)) {
+							String auxiliar2 = limpiarCadena(auxLib.get(k).getTitulo());
+							if (auxiliar.startsWith(auxiliar2) || auxiliar2.startsWith(auxiliar)) {
 								auxLib.get(k).setRepetido("SI");
-								estaRepetido=true;
+								estaRepetido = true;
 								break;
 							}
 						}
 						if (estaRepetido) {
-							repetido="SI";
-						}else {
-							repetido="NO";
+							repetido = "SI";
+						} else {
+							repetido = "NO";
 						}
 						libro.setRepetido(repetido);
 						auxLib.add(libro);
@@ -740,7 +738,7 @@ public class GrupLac {
 		String tipo = "";
 		String nombre = "";
 		String fecha = "";
-		String repetido= "NO";
+		String repetido = "NO";
 		ArrayList<Proyecto> auxPro = new ArrayList<>();
 
 		for (int i = 0; i < elementos.size(); i++) {
@@ -756,25 +754,25 @@ public class GrupLac {
 					fecha = "N/D";
 				} else {
 					String aux = elementos.get(i + 3);
-					fecha = aux.substring(0,4);
+					fecha = aux.substring(0, 4);
 				}
 				proyecto.setFecha(fecha);
 				proyecto.setNombre(nombre);
 				proyecto.setTipo(tipo);
-				String auxiliar=limpiarCadena(nombre);
+				String auxiliar = limpiarCadena(nombre);
 				boolean estaRepetido = false;
 				for (int j = 0; j < auxPro.size(); j++) {
-					String auxiliar2=limpiarCadena(auxPro.get(j).getNombre());
-					if (auxiliar.startsWith(auxiliar2)||auxiliar2.startsWith(auxiliar)) {
+					String auxiliar2 = limpiarCadena(auxPro.get(j).getNombre());
+					if (auxiliar.startsWith(auxiliar2) || auxiliar2.startsWith(auxiliar)) {
 						auxPro.get(j).setRepetido("SI");
-						estaRepetido=true;
+						estaRepetido = true;
 						break;
 					}
 				}
 				if (estaRepetido) {
-					repetido="SI";
-				}else {
-					repetido="NO";
+					repetido = "SI";
+				} else {
+					repetido = "NO";
 				}
 				proyecto.setRepetido(repetido);
 				auxPro.add(proyecto);
@@ -805,9 +803,9 @@ public class GrupLac {
 	}
 
 	/**
-	 * Este metodo se encarga de hacer el llamado al metodo que lee un archivo plano
-	 * y carga el dataSet de url's, ademas, crea y lanza un pool de hilos para
-	 * mejorar el tiempo de ejecucion del programa
+	 * Este metodo se encarga de hacer el llamado al metodo que lee un archivo
+	 * plano y carga el dataSet de url's, ademas, crea y lanza un pool de hilos
+	 * para mejorar el tiempo de ejecucion del programa
 	 */
 	public void scrapData() {
 
@@ -847,13 +845,12 @@ public class GrupLac {
 					for (int j = 0; j < listaIntegrantes.size(); j++) {
 						for (int k = 0; k < listaInvestigadores.size(); k++) {
 							String auxIntegrante = StringUtils.stripAccents(listaIntegrantes.get(j));
-							String auxInvestigador = StringUtils
-									.stripAccents(listaInvestigadores.get(k).getNombre());
+							String auxInvestigador = StringUtils.stripAccents(listaInvestigadores.get(k).getNombre());
 							if (auxIntegrante.equalsIgnoreCase(auxInvestigador)) {
 								String queryIntermedia = "insert into grup_inves (grupos_id, investigadores_id) values ("
 										+ grupo.getId() + "," + listaInvestigadores.get(k).getId() + ")";
 								statement.executeQuery(queryIntermedia);
-							}else if (auxInvestigador.contains(auxIntegrante)){
+							} else if (auxInvestigador.contains(auxIntegrante)) {
 								String queryIntermedia = "insert into grup_inves (grupos_id, investigadores_id) values ("
 										+ grupo.getId() + "," + listaInvestigadores.get(k).getId() + ")";
 								statement.executeQuery(queryIntermedia);
@@ -870,7 +867,7 @@ public class GrupLac {
 						Articulo a = listaArticulos.get(j);
 						String queryArticulos = Constantes.INSERT_GRUP_ART + "('" + a.getAutores() + "','"
 								+ a.getTitulo() + "','" + a.getNomRevista() + "','" + a.getLugar() + "','" + a.getAnio()
-								+ "','" + a.getTipo() + "'," + grupo.getId()+ ",'" + a.getRepetido()+ "')";
+								+ "','" + a.getTipo() + "'," + grupo.getId() + ",'" + a.getRepetido() + "')";
 						statement.executeQuery(queryArticulos);
 					}
 				}
@@ -882,7 +879,7 @@ public class GrupLac {
 						EventoCientifico e = listaEventos.get(j);
 						String queryEventos = Constantes.INSERT_GRUP_EVT + "('" + e.getNombre() + "','" + e.getTipo()
 								+ "','" + e.getAmbito() + "','" + e.getLugar() + "','" + e.getFecha() + "','"
-								+ e.getTipoParticipacion() + "'," + grupo.getId()+ ",'" + e.getRepetido()+ "')";
+								+ e.getTipoParticipacion() + "'," + grupo.getId() + ",'" + e.getRepetido() + "')";
 						statement.executeQuery(queryEventos);
 					}
 				}
@@ -894,7 +891,7 @@ public class GrupLac {
 						Libro l = listaLibros.get(j);
 						String queryLibros = Constantes.INSERT_GRUP_LIB + "('" + l.getTitulo() + "','" + l.getAutores()
 								+ "','" + l.getLugar() + "','" + l.getAnio() + "','" + l.getEditorial() + "',"
-								+ grupo.getId()+ ",'" +l.getRepetido() + "')";
+								+ grupo.getId() + ",'" + l.getRepetido() + "')";
 						statement.executeQuery(queryLibros);
 					}
 
@@ -906,7 +903,7 @@ public class GrupLac {
 					for (int j = 0; j < listaProyecto.size(); j++) {
 						Proyecto p = listaProyecto.get(j);
 						String queryProyectos = Constantes.INSERT_GRUP_PROY + "('" + p.getNombre() + "','" + p.getTipo()
-								+ "','" + p.getFecha() + "'," + grupo.getId()+ ",'" +p.getRepetido() + "')";
+								+ "','" + p.getFecha() + "'," + grupo.getId() + ",'" + p.getRepetido() + "')";
 						statement.executeQuery(queryProyectos);
 					}
 				}
@@ -919,21 +916,124 @@ public class GrupLac {
 		System.err.println(elapsedTime);
 
 	}
-	
+
 	public String limpiarCadena(String cadena) {
-		String aux=cadena;
-		aux=aux.replaceAll(" ", "");
-		aux=aux.replaceAll("&", "Y");
-		aux=aux.replaceAll(":", "");
-		aux=aux.replaceAll(",", "");
-		aux=aux.replaceAll("-", "");
-		aux=aux.replaceAll(";", "");
-		aux=aux.replaceAll("¿", "");
-		aux=aux.replaceAll("¡", "");
-		aux=aux.replaceAll("!", "");
-		String auxiliar=StringUtils.stripAccents(aux);
-		
+		String aux = cadena;
+		aux = aux.replaceAll(" ", "");
+		aux = aux.replaceAll("&", "Y");
+		aux = aux.replaceAll(":", "");
+		aux = aux.replaceAll(",", "");
+		aux = aux.replaceAll("-", "");
+		aux = aux.replaceAll(";", "");
+		aux = aux.replaceAll("¿", "");
+		aux = aux.replaceAll("¡", "");
+		aux = aux.replaceAll("!", "");
+		String auxiliar = StringUtils.stripAccents(aux);
+
 		return auxiliar;
 	}
-	
+
+	/**
+	 * Método que extrae la referencia biliográfica completa.
+	 */
+	public void extraccionReferencia(String url) {
+		if (getStatusConnectionCode(url) == 200) {
+
+			ArrayList<String> elemArticulos = new ArrayList<>();
+
+			ArrayList<String> elemLibros = new ArrayList<>();
+
+			ArrayList<String> elemCapLibros = new ArrayList<>();
+
+			ArrayList<String> elemOtrosRes = new ArrayList<>();
+
+			ArrayList<String> elemOtrosArticulos = new ArrayList<>();
+
+			ArrayList<String> elemOtrosLibros = new ArrayList<>();
+
+			ArrayList<String> elemTrabajos = new ArrayList<>();
+
+			Document document = getHtmlDocument(url);
+			// Busca todas las coincidencias que estan dentro de
+			Elements entradas = document.select("tbody");
+
+			for (Element elem : entradas) {
+
+				if (elem.text().contains("Artículos publicados")) {
+					elemArticulos.add(elem.toString());
+					elemArticulos = limpiar(elemArticulos);
+					for (int i = 0; i < elemArticulos.size(); i++) {
+						System.out.println(elemArticulos.get(i));
+					}
+
+				}
+
+				if (elem.text().startsWith("Libros publicados")) {
+					elemLibros.add(elem.toString());
+					elemLibros = limpiar(elemLibros);
+
+				}
+				if (elem.text().contains("Capítulos de libro publicados")) {
+					elemCapLibros.add(elem.toString());
+					elemCapLibros = limpiar(elemCapLibros);
+				}
+
+				if (elem.text().contains("Documentos de trabajo")) {
+					ArrayList<String> aux = new ArrayList<>();
+					aux.add(elem.toString());
+					aux = limpiar(aux);
+					elemOtrosRes.addAll(aux);
+				}
+				if (elem.text().contains("Otra publicación divulgativa")) {
+					ArrayList<String> aux = new ArrayList<>();
+					aux.add(elem.toString());
+					aux = limpiar(aux);
+					elemOtrosRes.addAll(aux);
+				}
+
+				if (elem.text().startsWith("Otros artículos publicados")) {
+					elemOtrosArticulos.add(elem.toString());
+					elemOtrosArticulos = limpiar(elemOtrosArticulos);
+				}
+				if (elem.text().contains("Otros Libros publicados")) {
+					elemOtrosLibros.add(elem.toString());
+					elemOtrosLibros = limpiar(elemOtrosLibros);
+				}
+				if (elem.text().contains("Trabajos dirigidos/turorías")) {
+					elemTrabajos.add(elem.toString());
+					elemTrabajos = limpiar(elemTrabajos);
+				}
+			}
+
+		} else {
+			System.out.println("El Status Code no es OK es: " + getStatusConnectionCode(url));
+		}
+	}
+
+	public void metodoViolentoArticulos(ArrayList<String> elementos) {
+		String autores = "";
+		for (int i = 0; i < elementos.size(); i++) {
+			if (elementos.contains("PUBLICADO EN REVISTA ESPECIALIZADA:")) {
+				int elemento1=i+1;
+				int elemento2=0;
+				int aux=i;
+				for (int j = aux; j < elementos.size(); j++) {
+					if(elementos.contains("AUTORES:"));
+					elemento2=j-1;
+				}
+			}
+			if (elementos.contains("AUTORES:")) {
+				int posI = 0;
+				String cadena = elementos.get(i);
+				char[] aux = cadena.toCharArray();
+				for (int j = 0; j < aux.length; j++) {
+					if (aux[i] == ':') {
+						posI = j + 2;
+						autores = cadena.substring(posI, cadena.length() - 1);
+					}
+				}
+			}
+
+		}
+	}
 }

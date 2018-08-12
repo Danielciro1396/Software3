@@ -12,8 +12,8 @@ public class ResearchScrapper {
 		GrupLac grp = new GrupLac();
 //		Orcid o = new Orcid();
 
-		grp.scrapData();
-		
+		//grp.scrapData();
+		grp.extraccionReferencia("http://scienti.colciencias.gov.co:8085/gruplac/jsp/visualiza/visualizagr.jsp?nro=00000000008165");
 		
 //		grp.extraer("http://scienti.colciencias.gov.co:8085/gruplac/jsp/visualiza/visualizagr.jsp?nro=00000000006997");
 		//grp.extraer("http://scienti.colciencias.gov.co:8085/gruplac/jsp/visualiza/visualizagr.jsp?nro=00000000009219");
