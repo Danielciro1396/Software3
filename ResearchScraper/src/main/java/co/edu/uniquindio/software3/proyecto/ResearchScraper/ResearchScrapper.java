@@ -13,7 +13,7 @@ public class ResearchScrapper {
 //		Orcid o = new Orcid();
 
 		//grp.scrapData();
-		grp.extraccionReferencia("http://scienti.colciencias.gov.co:8085/gruplac/jsp/visualiza/visualizagr.jsp?nro=00000000008165");
+		grp.extraerReferencia("http://scienti.colciencias.gov.co:8085/gruplac/jsp/visualiza/visualizagr.jsp?nro=00000000005918");
 		
 //		grp.extraer("http://scienti.colciencias.gov.co:8085/gruplac/jsp/visualiza/visualizagr.jsp?nro=00000000006997");
 		//grp.extraer("http://scienti.colciencias.gov.co:8085/gruplac/jsp/visualiza/visualizagr.jsp?nro=00000000009219");

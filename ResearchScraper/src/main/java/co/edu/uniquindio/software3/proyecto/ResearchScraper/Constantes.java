@@ -15,4 +15,6 @@ public class Constantes {
 	public static final String INSERT_GRUP_LIB = "insert into libros_grup (titulo, autores, lugar, anio, editorial, grupos_id, repetido) values ";
 	public static final String INSERT_GRUP_PROY = "insert into proyectos_grup (nombre, tipo, fecha, grupos_id, repetido) values ";
 	
+	public static final String INSERT_REPORTE = "insert into publicaciones (tipo, identificador, autores, anio, referencia) values ";
+	
 	}

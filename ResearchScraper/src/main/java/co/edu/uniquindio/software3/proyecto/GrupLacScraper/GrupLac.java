@@ -30,11 +30,13 @@ public class GrupLac {
 
 	List<Grupo> grupos = Collections.synchronizedList(new ArrayList<Grupo>());
 
+	ArrayList<PublicacionBibliografica> publicaciones = new ArrayList<>();
+
 	/**
-	 * Método provisto por JSoup para comprobar el Status code de la respuesta
-	 * que recibo al hacer la petición Codigos: 200 OK 300 Multiple Choices 301
-	 * Moved Permanently 305 Use Proxy 400 Bad Request 403 Forbidden 404 Not
-	 * Found 500 Internal Server Error 502 Bad Gateway 503 Service Unavailable
+	 * Método provisto por JSoup para comprobar el Status code de la respuesta que
+	 * recibo al hacer la petición Codigos: 200 OK 300 Multiple Choices 301 Moved
+	 * Permanently 305 Use Proxy 400 Bad Request 403 Forbidden 404 Not Found 500
+	 * Internal Server Error 502 Bad Gateway 503 Service Unavailable
 	 * 
 	 * @param url,
 	 *            el enlace de la página web a analizar.
@@ -53,8 +55,8 @@ public class GrupLac {
 	}
 
 	/**
-	 * Método que retorna un objeto de la clase Document con el contenido del
-	 * HTML de la web para poder ser parseado posteriormente con JSoup
+	 * Método que retorna un objeto de la clase Document con el contenido del HTML
+	 * de la web para poder ser parseado posteriormente con JSoup
 	 * 
 	 * @param url,
 	 *            el enlace de la página web a analizar.
@@ -72,9 +74,9 @@ public class GrupLac {
 	}
 
 	/**
-	 * Metodo que realiza la extraccion de la estructura de una pagina web,
-	 * separa en las diferentas categorias la estructura de la pagina web y
-	 * hacer el llamado al metodo que asigna los datos a cada grupo
+	 * Metodo que realiza la extraccion de la estructura de una pagina web, separa
+	 * en las diferentas categorias la estructura de la pagina web y hacer el
+	 * llamado al metodo que asigna los datos a cada grupo
 	 * 
 	 * @param url,
 	 *            direccion url de un investigador
@@ -803,9 +805,9 @@ public class GrupLac {
 	}
 
 	/**
-	 * Este metodo se encarga de hacer el llamado al metodo que lee un archivo
-	 * plano y carga el dataSet de url's, ademas, crea y lanza un pool de hilos
-	 * para mejorar el tiempo de ejecucion del programa
+	 * Este metodo se encarga de hacer el llamado al metodo que lee un archivo plano
+	 * y carga el dataSet de url's, ademas, crea y lanza un pool de hilos para
+	 * mejorar el tiempo de ejecucion del programa
 	 */
 	public void scrapData() {
 
@@ -936,7 +938,7 @@ public class GrupLac {
 	/**
 	 * Método que extrae la referencia biliográfica completa.
 	 */
-	public void extraccionReferencia(String url) {
+	public void extraerReferencia(String url) {
 		if (getStatusConnectionCode(url) == 200) {
 
 			ArrayList<String> elemArticulos = new ArrayList<>();
@@ -962,17 +964,13 @@ public class GrupLac {
 				if (elem.text().contains("Artículos publicados")) {
 					elemArticulos.add(elem.toString());
 					elemArticulos = limpiar(elemArticulos);
-					for (int i = 0; i < elemArticulos.size(); i++) {
-						System.out.println(elemArticulos.get(i));
-					}
-
 				}
 
 				if (elem.text().startsWith("Libros publicados")) {
 					elemLibros.add(elem.toString());
 					elemLibros = limpiar(elemLibros);
-
 				}
+
 				if (elem.text().contains("Capítulos de libro publicados")) {
 					elemCapLibros.add(elem.toString());
 					elemCapLibros = limpiar(elemCapLibros);
@@ -1004,34 +1002,272 @@ public class GrupLac {
 					elemTrabajos = limpiar(elemTrabajos);
 				}
 			}
+			 referenciaArticulos(elemArticulos);
+			 referenciaArticulos(elemOtrosArticulos);
+			referenciaLibros(elemLibros);
+			referenciaLibros(elemOtrosLibros);
+			 referenciaCapitulosLibros(elemCapLibros);
+			 referenciaTrabajosGrado(elemTrabajos);
 
+			 try {
+			 Connection connection = DataSource.getInstance().getConnection();
+			 Statement statement = connection.createStatement();
+			 for (int i = 0; i < publicaciones.size(); i++) {
+			 PublicacionBibliografica p = publicaciones.get(i);
+			 String query = Constantes.INSERT_REPORTE + "('" + p.getTipo().toUpperCase() +
+			 "', '"
+			 + p.getIdentificador().toUpperCase() + "' , '" + p.getAutores().toUpperCase()
+			 + "' , '"
+			 + p.getAnio().toUpperCase() + "' , '" + p.getReferencia().toUpperCase() +
+			 "')";
+			 statement.executeQuery(query);
+			 }
+			
+			 } catch (Exception e) {
+			 e.printStackTrace();
+			 }
 		} else {
 			System.out.println("El Status Code no es OK es: " + getStatusConnectionCode(url));
 		}
+
 	}
 
-	public void metodoViolentoArticulos(ArrayList<String> elementos) {
+	public void referenciaCapitulosLibros(ArrayList<String> elementos) {
+
 		String autores = "";
+		String cadena = "";
+		String anio = "";
+
 		for (int i = 0; i < elementos.size(); i++) {
-			if (elementos.contains("PUBLICADO EN REVISTA ESPECIALIZADA:")) {
-				int elemento1=i+1;
-				int elemento2=0;
-				int aux=i;
-				for (int j = aux; j < elementos.size(); j++) {
-					if(elementos.contains("AUTORES:"));
-					elemento2=j-1;
-				}
-			}
-			if (elementos.contains("AUTORES:")) {
-				int posI = 0;
-				String cadena = elementos.get(i);
-				char[] aux = cadena.toCharArray();
+			PublicacionBibliografica publicacionBibliografica = new PublicacionBibliografica();
+			if (elementos.get(i).contains("CAPÍTULO DE LIBRO")) {
+				cadena = "";
+				anio = elementos.get(i + 2);
+				char[] aux = anio.toCharArray();
 				for (int j = 0; j < aux.length; j++) {
-					if (aux[i] == ':') {
-						posI = j + 2;
-						autores = cadena.substring(posI, cadena.length() - 1);
+					if (aux[j] == ',') {
+						anio = anio.substring(j + 2, j + 6);
+						break;
 					}
 				}
+
+				i++;
+				while (!elementos.get(i).contains("AUTORES:")) {
+					cadena += elementos.get(i);
+					cadena += ", ";
+					i++;
+
+				}
+				cadena = cadena.substring(2, cadena.length() - 2);
+			}
+
+			if (elementos.get(i).contains("AUTORES:")) {
+				autores = elementos.get(i);
+				autores = autores.substring(9, autores.length() - 1);
+				publicacionBibliografica.setIdentificador("C. Lb.");
+				publicacionBibliografica.setReferencia(cadena);
+				publicacionBibliografica.setAnio(anio);
+				publicacionBibliografica.setAutores(autores);
+				publicacionBibliografica.setTipo("CAPITULO DE LIBRO");
+				publicaciones.add(publicacionBibliografica);
+			}
+		}
+
+	}
+
+	public void referenciaTrabajosGrado(ArrayList<String> elementos) {
+
+		String autores = "";
+		String cadena = "";
+		String anio = "";
+		String identificador = "";
+
+		for (int i = 0; i < elementos.size(); i++) {
+			PublicacionBibliografica publicacionBibliografica = new PublicacionBibliografica();
+			if (elementos.get(i).contains("TRABAJOS DE GRADO DE PREGRADO")
+					|| elementos.get(i).contains("TRABAJO DE GRADO DE MAESTRÍA")
+					|| elementos.get(i).contains("TESIS DE DOCTORADO")) {
+				if (elementos.get(i).contains("TRABAJOS DE GRADO DE PREGRADO")) {
+					identificador = "T.Grado-P";
+				}
+				if (elementos.get(i).contains("TRABAJO DE GRADO DE MAESTRÍA")) {
+					identificador = "T.Grado-M";
+				}
+				if (elementos.get(i).contains("TESIS DE DOCTORADO")) {
+					identificador = "T.Grado-D";
+				}
+
+				cadena = "";
+				anio = elementos.get(i + 2);
+				char[] aux = anio.toCharArray();
+				for (int j = 0; j < aux.length; j++) {
+					if (aux[j] == 'H' && aux[j + 1] == 'A' && aux[j + 2] == 'S') {
+						anio = anio.substring(j - 5, j - 1);
+						break;
+					}
+				}
+
+				i++;
+				while (!elementos.get(i).contains("AUTORES:")) {
+					cadena += elementos.get(i);
+					cadena += ", ";
+					i++;
+
+				}
+				cadena = cadena.substring(2, cadena.length() - 2);
+				if (elementos.get(i).contains("AUTORES:")) {
+					autores = elementos.get(i);
+					autores = autores.substring(9, autores.length() - 1);
+
+					publicacionBibliografica.setIdentificador(identificador);
+					publicacionBibliografica.setReferencia(cadena);
+					publicacionBibliografica.setAnio(anio);
+					publicacionBibliografica.setAutores(autores);
+					publicacionBibliografica.setTipo("TRABAJO GRADO");
+					publicaciones.add(publicacionBibliografica);
+				}
+			}
+
+			
+		}
+
+	}
+
+	public void referenciaLibros(ArrayList<String> elementos) {
+		String identificador = "";
+		String autores = "";
+		String anio = "";
+		String referencia = "";
+		String tipo = "";
+		for (int i = 0; i < elementos.size(); i++) {
+			PublicacionBibliografica publicacionBibliografica = new PublicacionBibliografica();
+			if (elementos.get(i).contains(".-")) {
+				i++;
+				if (elementos.get(i).contains("LIBRO RESULTADO DE INVESTIGACIÓN")) {
+
+					identificador = "Lb.";
+					tipo = "LIBRO";
+					anio = elementos.get(i + 2);
+					char[] aux = anio.toCharArray();
+					for (int j = 0; j < aux.length; j++) {
+						if (aux[j] == ',') {
+							anio = anio.substring(j + 1, j + 5);
+							break;
+						}
+					}
+					referencia = "";
+					i++;
+					while (!elementos.get(i).contains("AUTORES:")) {
+						referencia += elementos.get(i);
+						referencia += ", ";
+						i++;
+
+					}
+					referencia = referencia.substring(2, referencia.length() - 2);
+				}
+				if (elementos.get(i).contains("OTRO LIBRO PUBLICADO")) {
+
+					identificador = "Lb.";
+					tipo = "OTROLIBRO";
+					anio = elementos.get(i + 2);
+					char[] aux = anio.toCharArray();
+					for (int j = 0; j < aux.length; j++) {
+						if (aux[j] == ',') {
+							anio = anio.substring(j + 1, j + 5);
+							break;
+						}
+					}
+					referencia = "";
+					i++;
+					while (!elementos.get(i).contains("AUTORES:")) {
+						referencia += elementos.get(i);
+						referencia += ", ";
+						i++;
+
+					}
+					referencia = referencia.substring(2, referencia.length() - 2);
+				}
+			}
+
+			if (elementos.get(i).contains("AUTORES:")) {
+				autores = elementos.get(i);
+				autores = autores.substring(9, autores.length() - 1);
+
+
+				 publicacionBibliografica.setIdentificador(identificador);
+				 publicacionBibliografica.setReferencia(referencia);
+				 publicacionBibliografica.setAnio(anio);
+				 publicacionBibliografica.setAutores(autores);
+				 publicacionBibliografica.setTipo(tipo);
+				 publicaciones.add(publicacionBibliografica);
+			}
+		}
+	}
+
+	public void referenciaArticulos(ArrayList<String> elementos) {
+		String autores = "";
+		String referencia = "";
+		String anio = "";
+		String issn = "";
+		String tipo = "";
+		for (int i = 0; i < elementos.size(); i++) {
+			PublicacionBibliografica publicacionBibliografica = new PublicacionBibliografica();
+
+			if (elementos.get(i).contains(".-")) {
+				if (elementos.get(i + 1).contains("PUBLICADO EN REVISTA ESPECIALIZADA:")) {
+					tipo = "ARTICULO";
+				} else {
+					tipo = "OTROART";
+				}
+
+				referencia = "";
+				for (int j = i + 2; j < elementos.size(); j++) {
+					if (!elementos.get(j).contains("AUTORES:")) {
+						referencia += " " + elementos.get(j);
+					} else {
+						break;
+					}
+				}
+
+				if (referencia.endsWith("DOI:")) {
+					referencia = referencia.substring(1, referencia.length() - 5);
+				}
+
+				if (referencia.startsWith(" : ")) {
+					referencia = referencia.substring(3);
+				}
+
+			}
+
+			if (elementos.get(i).contains("ISSN")) {
+				char[] aux = elementos.get(i).toCharArray();
+				for (int j = 0; j < aux.length; j++) {
+					if (aux[j] == 'I' && aux[j + 1] == 'S' && aux[j + 2] == 'S') {
+						int posI = j + 6;
+						int posF = posI;
+						for (int k = posI; k < aux.length; k++) {
+							if (aux[k] == ',') {
+								posF = k;
+								break;
+							}
+						}
+						issn = elementos.get(i).substring(posI, posF);
+						anio = elementos.get(i).substring(posF + 2, posF + 6);
+						break;
+					}
+				}
+
+			}
+
+			if (elementos.get(i).contains("AUTORES:")) {
+				autores = elementos.get(i).substring(9, elementos.get(i).length() - 1);
+				publicacionBibliografica.setAnio(anio);
+				publicacionBibliografica.setAutores(autores);
+				publicacionBibliografica.setIdentificador(issn);
+				publicacionBibliografica.setReferencia(referencia);
+				publicacionBibliografica.setTipo(tipo);
+				publicaciones.add(publicacionBibliografica);
+
 			}
 
 		}

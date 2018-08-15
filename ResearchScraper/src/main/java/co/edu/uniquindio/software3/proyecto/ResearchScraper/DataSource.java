@@ -15,8 +15,8 @@ public class DataSource {
     private DataSource() throws IOException, SQLException, PropertyVetoException {
         ds = new BasicDataSource();
         ds.setDriverClassName("oracle.jdbc.driver.OracleDriver");
-        ds.setUsername("software3");
-        ds.setPassword("software3");
+        ds.setUsername("reporte");
+        ds.setPassword("reporte");
         ds.setUrl("jdbc:oracle:thin:@localhost:1521:xe");
     }
 
